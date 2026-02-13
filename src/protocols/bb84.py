@@ -66,16 +66,20 @@ class BB84:
         for i in zip(key, basis):
             if i[0] == "0" and i[1] == "Z":
                 quantum_state += "0"
+                continue
 
             if i[0] == "0" and i[1] == "X":
                 quantum_state += "+"
-                
+                continue
+
             if i[0] == "1" and i[1] == "Z":
                 quantum_state += "1"
+                continue
 
             if i[0] == "1" and i[1] == "X":
                 quantum_state += "-"
-            
+                continue
+
             return quantum_state
         
     def key_sift(self):
@@ -84,12 +88,10 @@ class BB84:
 if __name__ == "__main__":
 
     Alice = Alice(5)
+    Bob = Bob(5)
 
     secret_key = Alice.rand_key()
     alice_basis = Alice.rand_basis()
-
-    Bob = Bob(5)
-    print(Alice.rand_basis(), Alice.rand_key())
 
     protocol = BB84(Alice, Bob)
 
