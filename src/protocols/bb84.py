@@ -5,7 +5,7 @@ def X():
     return 
 class Alice:
     """
-    Alice wants to send a secretkey to Bob
+    Alice generates a random raw key and a random basis string for BB84.
     """
     def __init__(self, length:int):
         self.length = length
@@ -31,7 +31,9 @@ class Alice:
         return basis
 
 class Bob:
-
+    """ 
+    Bob chooses a random basis string and later measures incoming qubits
+    """
     def __init__(self, length:int):
         self. length = length
 
@@ -48,14 +50,19 @@ class Bob:
 
 class Eve:
     """ 
-    Evesdropper that
+    Eve measures each qubit in a random basis and resends the corresponding state, introducing errors.
     """
     def __init__(self):
         pass
 
 
 class BB84:
-
+    """ 
+    BB84 protocol:
+    1. Alices quantum encoding of the secret string
+    2. Bob's measurement outcome dependent on basis choice
+    3. Sifting for shared key
+    """
     def __init__(self, alice: Alice, bob: Bob):
         self.alice = alice
         self.bob = bob
