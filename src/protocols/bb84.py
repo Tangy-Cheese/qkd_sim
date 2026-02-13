@@ -59,14 +59,11 @@ class BB84:
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
 
-        secret_key = alice.rand_key()
-        alice_basis = alice.rand_basis()
-    
-    def quantum_encoding(self):
+    def quantum_encoding(self, key:str, basis:str)->str:
         
         quantum_state = ""
 
-        for i in zip(self.secret_key, self.alice_basis):
+        for i in zip(key, basis):
             if i[0] == "0" and i[1] == "Z":
                 quantum_state += "0"
 
@@ -84,13 +81,16 @@ class BB84:
     def key_sift(self):
         pass
 
-    
-if __name__ == "main":
+if __name__ == "__main__":
 
     Alice = Alice(5)
+
+    secret_key = Alice.rand_key()
+    alice_basis = Alice.rand_basis()
+
     Bob = Bob(5)
-    print(Alice.rand_basis, Alice.rand_key)
+    print(Alice.rand_basis(), Alice.rand_key())
 
     protocol = BB84(Alice, Bob)
 
-    print(protocol.quantum_encoding())
+    print(protocol.quantum_encoding(secret_key, alice_basis))
