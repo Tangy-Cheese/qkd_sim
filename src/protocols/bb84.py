@@ -4,7 +4,9 @@ import random
 def X():
     return 
 class Alice:
-
+    """
+    Alice wants to send a secretkey to Bob
+    """
     def __init__(self, length:int):
         self.length = length
 
@@ -36,7 +38,7 @@ class Bob:
     def rand_basis(self)->str:
 
         basis = ""
-        bases = ["X", "H"]
+        bases = ["X", "Z"]
         for _ in range(self.length):
             basis += random.choice(bases)
 
@@ -45,7 +47,9 @@ class Bob:
         return basis
 
 class Eve:
-
+    """ 
+    Evesdropper that
+    """
     def __init__(self):
         pass
 
