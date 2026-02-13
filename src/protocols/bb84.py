@@ -20,7 +20,7 @@ class Alice:
     def rand_basis(self)->str:
 
         basis = ""
-        bases = ["X", "H"]
+        bases = ["X", "Z"]
         for _ in range(self.length):
             basis += random.choice(bases)
 
@@ -58,8 +58,13 @@ class BB84:
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
 
+        alice
+
+
     def key_sift(self):
         pass
+
+    
 
 
 Alice = Alice(5)
