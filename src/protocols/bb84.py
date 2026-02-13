@@ -63,24 +63,24 @@ class BB84:
         
         quantum_state = ""
 
-        for i in zip(key, basis):
-            if i[0] == "0" and i[1] == "Z":
+        for bit,base in zip(key, basis):
+            if bit == "0" and base == "Z":
                 quantum_state += "0"
                 continue
 
-            if i[0] == "0" and i[1] == "X":
+            if bit == "0" and base == "X":
                 quantum_state += "+"
                 continue
 
-            if i[0] == "1" and i[1] == "Z":
+            if bit == "1" and base == "Z":
                 quantum_state += "1"
                 continue
 
-            if i[0] == "1" and i[1] == "X":
+            if bit == "1" and base == "X":
                 quantum_state += "-"
                 continue
 
-            return quantum_state
+        return quantum_state
         
     def key_sift(self):
         pass
