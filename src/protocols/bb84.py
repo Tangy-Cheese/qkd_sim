@@ -1,8 +1,13 @@
 import numpy as np
 import random
 
-def X():
-    return 
+def print_state(state:str)->str:
+    kets = ""
+    for i in state:
+        kets += f"|{i}> "
+
+    print(kets)
+
 class Alice:
     """
     Alice generates a random raw key and a random basis string for BB84.
@@ -16,7 +21,6 @@ class Alice:
         for _ in range(self.length):
             key += str(random.randint(0, 1))
 
-        #print(f"Alice's secret key is {key}")
         return key
     
     def rand_basis(self)->str:
@@ -25,8 +29,6 @@ class Alice:
         bases = ["X", "Z"]
         for _ in range(self.length):
             basis += random.choice(bases)
-
-        #print(f"Alice random basis choices are {basis}")
               
         return basis
 
@@ -44,8 +46,6 @@ class Bob:
         for _ in range(self.length):
             basis += random.choice(bases)
 
-        #print(f"Bob random basis choices are {basis}")
-              
         return basis
 
 class Eve:
@@ -92,6 +92,9 @@ class BB84:
                 continue
 
         return quantum_state
+    
+    def measurement(self):
+        pass
         
     def key_sift(self):
         pass
@@ -104,6 +107,14 @@ if __name__ == "__main__":
     secret_key = Alice.rand_key()
     alice_basis = Alice.rand_basis()
 
-    protocol = BB84(Alice, Bob)
+    bob_basis = Bob.rand_basis()
 
-    print(protocol.quantum_encoding(secret_key, alice_basis))
+    print(f"Alice's key is {secret_key}")
+    print(f"Alice's basis is {alice_basis}")
+
+    print(f"Bob random basis choices are {bob_basis}")
+              
+    protocol = BB84(Alice, Bob)
+    state = protocol.quantum_encoding(secret_key, alice_basis)
+
+    print_state(state)
