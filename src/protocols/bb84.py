@@ -14,7 +14,7 @@ class Alice:
         for _ in range(self.length):
             key += str(random.randint(0, 1))
 
-        print(f"Alice's secret key is {key}")
+        #print(f"Alice's secret key is {key}")
         return key
     
     def rand_basis(self)->str:
@@ -24,7 +24,7 @@ class Alice:
         for _ in range(self.length):
             basis += random.choice(bases)
 
-        print(f"Alice random basis choices are {basis}")
+        #print(f"Alice random basis choices are {basis}")
               
         return basis
 
@@ -40,7 +40,7 @@ class Bob:
         for _ in range(self.length):
             basis += random.choice(bases)
 
-        print(f"Bob random basis choices are {basis}")
+        #print(f"Bob random basis choices are {basis}")
               
         return basis
 
@@ -48,6 +48,7 @@ class Eve:
 
     def __init__(self):
         pass
+
 
 class BB84:
 
@@ -58,19 +59,38 @@ class BB84:
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
 
-        alice
+        secret_key = alice.rand_key()
+        alice_basis = alice.rand_basis()
+    
+    def quantum_encoding(self):
+        
+        quantum_state = ""
 
+        for i in zip(self.secret_key, self.alice_basis):
+            if i[0] == "0" and i[1] == "Z":
+                quantum_state += "0"
 
+            if i[0] == "0" and i[1] == "X":
+                quantum_state += "+"
+                
+            if i[0] == "1" and i[1] == "Z":
+                quantum_state += "1"
+
+            if i[0] == "1" and i[1] == "X":
+                quantum_state += "-"
+            
+            return quantum_state
+        
     def key_sift(self):
         pass
 
     
+if __name__ == "main":
 
+    Alice = Alice(5)
+    Bob = Bob(5)
+    print(Alice.rand_basis, Alice.rand_key)
 
-Alice = Alice(5)
-Bob = Bob(4)
+    protocol = BB84(Alice, Bob)
 
-protocol = BB84(Alice, Bob)
-
-Bob.rand_basis()
-Alice.rand_basis()
+    print(protocol.quantum_encoding())
