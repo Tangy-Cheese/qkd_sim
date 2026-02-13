@@ -119,8 +119,12 @@ class BB84:
         
         return measured_state
         
-    def key_sift(self):
-        pass
+    def key_sift(self, key_1:str, key_2:str)->str:
+        if len(key_1) != len(key_2):
+            raise Exception("Keys need to be the same length when sifted.")
+
+        sifted_state = "".join(key_1[i] if key_1[i] == key_2[i] else "" for i in range(len(key_1)))
+        return "".join("0" if (qubit == "0" or qubit == "+") else "1" for qubit in sifted_state)
 
 if __name__ == "__main__":
 
@@ -145,3 +149,7 @@ if __name__ == "__main__":
     measured_state = protocol.measurement(state, bob_basis)
     
     print(f"Bob measures the state and gets {format_state(measured_state)}")
+
+    sifted_key = protocol.key_sift(state, measured_state)
+
+    print(f"Their shared key is {sifted_key}")
