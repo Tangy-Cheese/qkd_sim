@@ -72,12 +72,7 @@ class Eve:
 
 
 class BB84:
-    """ 
-    BB84 protocol:
-    1. Alices quantum encoding of the secret string
-    2. Bob's measurement outcome dependent on basis choice
-    3. Sifting for shared key
-    """
+
     def __init__(self, alice: Alice, bob: Bob):
         self.alice = alice
         self.bob = bob
@@ -86,7 +81,20 @@ class BB84:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
 
     def quantum_encoding(self, key:str, basis:str)->str:
-        
+        """
+        Alice encodes her bitstring to quantum states using her bases.
+
+        Parameters
+        ----------
+        key
+            Secret key which is a string of bits.
+        basis
+            Alice's basis physically represents the polarisation of photon states.
+
+        Returns
+        -------
+            Encoded quantum state.
+        """        
         quantum_state = ""
 
         for bit,base in zip(key, basis):
@@ -109,7 +117,22 @@ class BB84:
         return quantum_state
     
     def measurement(self, state:str, basis:str)->str:
-        
+        """
+        Alice sends the quantum state to Bob, who measure each qubit in his randomly chosen basis.
+
+        Parameters
+        ----------
+        state
+            Quantum state sent from Alice.
+        basis
+           Bob's random basis choices.
+
+        Returns
+        -------
+            If bob measures in the same state that Alice encodes her bits in, he will measure the same bit as Alice.
+            However, if he measures in a different basis, then there will be a 50% chance his resulting bit is the same.
+            Bob's measured state is a bitstring of same length as Alice's key.
+        """        
         measured_state = ""
 
         for qubit,base in zip(state,basis):
@@ -136,7 +159,25 @@ class BB84:
         
         return measured_state
         
-    def key_sift(self, key_1:str, key_2:str)->str:
+    def key_sift(self, key_1:str, key_2:str, basis_1 = None, basis_2 = None)->str:
+        """
+        Now Alice and Bob pubically compare their bases. And both their keys are sifted according to their matching bases.
+
+        Parameters
+        ----------
+        key_1
+            Alice's key
+        key_2
+            Bob's key
+        basis_1
+            Alice's basis string
+        basis_2
+            Bob's basis string
+
+        Returns
+        -------
+            They each have a sifted key which keeps the bits corresponding to the position of their matchin bases.
+        """        
         if len(key_1) != len(key_2):
             raise Exception("Keys need to be the same length when sifted.")
 
