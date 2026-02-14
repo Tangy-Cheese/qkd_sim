@@ -144,17 +144,15 @@ class BB84:
                 continue
 
             if (qubit == "+" or qubit == "-") and base == "Z":
-                next_bit = "0" if coin_flip == 0 else "1"
-                measured_state += next_bit
+                measured_state += str(coin_flip)
                 continue
 
             if (qubit == "0" or qubit == "1") and base == "X":
-                next_bit = "+" if coin_flip == 0 else "-"
-                measured_state += next_bit
+                measured_state += str(coin_flip)
                 continue
 
             if (qubit == "+" or qubit == "-") and base == "X":
-                measured_state += qubit
+                measured_state += "0" if qubit =="+" else "1"
                 continue
         
         return measured_state
