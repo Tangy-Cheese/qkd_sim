@@ -157,9 +157,9 @@ class BB84:
         
         return measured_state
         
-    def key_sift(self, key_1:str, key_2:str, basis_1 = None, basis_2 = None)->str:
+    def key_sift(self, key_1:str, key_2:str, basis_1:str, basis_2:str)->tuple[str, str]:
         """
-        Now Alice and Bob pubically compare their bases. And both their keys are sifted according to their matching bases.
+        Now Alice and Bob publicly compare their bases. And both their keys are sifted according to their matching bases.
 
         Parameters
         ----------
@@ -174,13 +174,21 @@ class BB84:
 
         Returns
         -------
-            They each have a sifted key which keeps the bits corresponding to the position of their matchin bases.
-        """        
-        if len(key_1) != len(key_2):
+            They each have a sifted key which keeps the bits corresponding to the position of their matching bases.
+
+        Raises
+        ------
+        Exception
+            Key length checks.
+        """              
+        str_length = len(key_1)
+        if str_length != len(key_2):
             raise Exception("Keys need to be the same length when sifted.")
 
-        sifted_state = "".join(key_1[i] if key_1[i] == key_2[i] else "" for i in range(len(key_1)))
-        return "".join("0" if (qubit == "0" or qubit == "+") else "1" for qubit in sifted_state)
+        sifted_alice = "".join(key_1[i] if basis_1[i] == basis_2[i] else "" for i in range(str_length))
+        sifted_bob = "".join(key_2[i] if basis_1[i] == basis_2[i] else "" for i in range(str_length))
+
+        return (sifted_alice, sifted_bob)
 
 if __name__ == "__main__":
 
