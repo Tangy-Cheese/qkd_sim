@@ -67,16 +67,17 @@ class Eve:
     """ 
     Eve measures each qubit in a random basis and resends the corresponding state, introducing errors.
     """
-    def __init__(self):
+    def __init__(self, ):
         pass
 
 
 class BB84:
 
-    def __init__(self, alice: Alice, bob: Bob):
+    def __init__(self, alice: Alice, bob: Bob, eve: Eve):
         self.alice = alice
         self.bob = bob
-        
+        self.eve = eve
+
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
 
@@ -205,7 +206,7 @@ if __name__ == "__main__":
 
     print(f"Bob's random basis choices are {bob_basis}")
               
-    protocol = BB84(Alice, Bob)
+    protocol = BB84(Alice, Bob, eve=None)
     state = protocol.quantum_encoding(secret_key, alice_basis)
 
     print(f"Alice sends {format_state(state)} to Bob")
