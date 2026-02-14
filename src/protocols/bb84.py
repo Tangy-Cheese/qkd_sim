@@ -214,6 +214,9 @@ if __name__ == "__main__":
     
     print(f"Bob measures the state and gets {format_state(measured_state)}")
 
-    sifted_key = protocol.key_sift(state, measured_state)
+    sifted_keys = protocol.key_sift(secret_key, measured_state, alice_basis, bob_basis)
 
-    print(f"Their shared key is {sifted_key}")
+    print(f"Their shared key is {sifted_keys}")
+    erate = error_rate(sifted_keys)
+
+    print(f"Error rate is {erate}")
