@@ -1,0 +1,35 @@
+[project]
+name = "QKDSim"
+version = "0.1.0"
+description = "QKD simulators"
+authors = [
+    { name = "Adam <surname>"},
+    { name = "Pan <surname>"}
+]
+requires-python = ">=3.12"
+readme = "README.md"
+keywords = ["QKD", "Quantum", "Quantum Cryptography"]
+dependencies = [
+    "numpy>=1.20.0",
+    "scipy",
+    "matplotlib>=3.5.0"
+]
+license = { file = "LICENSE" }
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0"
+]
+
+[project.urls]
+repository = "https://github.com/Tangy-Cheese/QKD"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
