@@ -111,9 +111,11 @@ class BB84:
     def measurement(self, state:str, basis:str)->str:
         
         measured_state = ""
-        coin_flip = random.randint(0, 1)
 
         for qubit,base in zip(state,basis):
+            
+            coin_flip = random.randint(0, 1)
+
             if (qubit == "0" or qubit == "1") and base == "Z":
                 measured_state += qubit
                 continue
