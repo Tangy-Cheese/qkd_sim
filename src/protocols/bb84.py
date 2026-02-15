@@ -67,9 +67,18 @@ class Eve:
     """ 
     Eve measures each qubit in a random basis and resends the corresponding state, introducing errors.
     """
-    def __init__(self, ):
-        pass
+    def __init__(self, length:int):
+        
+        self.length = length
 
+    def rand_basis(self)->str:
+
+        basis = ""
+        bases = ["X", "Z"]
+        for _ in range(self.length):
+            basis += random.choice(bases)
+
+        return basis
 
 class BB84:
 
@@ -116,7 +125,28 @@ class BB84:
                 continue
 
         return quantum_state
-    
+
+    def eavesdropping(self, state: str)->str:
+        """
+        Eve attempts to gain information by measuring the quantum states
+        from Alice, but because she does not know the bases, her measurements 
+        disturb the states and introduce errors.
+
+        Parameters
+        ----------
+        state
+            Alices quantum state that she thinks has been sent to bob.
+
+        Returns
+        -------
+            Eve sends off a quantum state to Bob pretending to be Alice.
+        """        
+        eve_basis = self.eve.rand_basis()
+        eve_measurement = self.measurement(state, eve_basis)
+        eve_encoded_state = self.quantum_encoding(eve_measurement, eve_basis)
+
+        return eve_encoded_state
+
     def measurement(self, state:str, basis:str)->str:
         """
         Alice sends the quantum state to Bob, who measure each qubit in his randomly chosen basis.
@@ -190,34 +220,66 @@ class BB84:
         sifted_bob = "".join(key_2[i] if basis_1[i] == basis_2[i] else "" for i in range(str_length))
 
         return (sifted_alice, sifted_bob)
+    
+    def run(self)->tuple[str, str]:
+        """_
+        Running the protocol using the methods above.
+
+        Returns
+        -------
+            Alice's and Bob's sifted keys.
+        """        
+        secret_key = self.alice.rand_key()
+        alice_basis = self.alice.rand_basis()
+        bob_basis = self.bob.rand_basis()
+        
+        state = self.quantum_encoding(secret_key, alice_basis)
+
+        if self.eve is not None:
+            state = self.eavesdropping(state)
+
+        measured_state = self.measurement(state, bob_basis)
+        sifted_keys = self.key_sift(secret_key, measured_state, alice_basis, bob_basis)
+
+        return sifted_keys
 
 if __name__ == "__main__":
 
-    Alice = Alice(5)
-    Bob = Bob(5)
+    #Alice = Alice(5)
+    #Bob = Bob(5)
 
-    secret_key = Alice.rand_key()
-    alice_basis = Alice.rand_basis()
+    #secret_key = Alice.rand_key()
+    #alice_basis = Alice.rand_basis()
 
-    bob_basis = Bob.rand_basis()
+    #bob_basis = Bob.rand_basis()
 
-    print(f"Alice's key is {secret_key}")
-    print(f"Alice's basis is {alice_basis}")
+    #print(f"Alice's key is {secret_key}")
+    #print(f"Alice's basis is {alice_basis}")
 
-    print(f"Bob's random basis choices are {bob_basis}")
+    #print(f"Bob's random basis choices are {bob_basis}")
               
-    protocol = BB84(Alice, Bob, eve=None)
-    state = protocol.quantum_encoding(secret_key, alice_basis)
+    #protocol = BB84(Alice, Bob, eve=None)
+    #state = protocol.quantum_encoding(secret_key, alice_basis)
 
-    print(f"Alice sends {format_state(state)} to Bob")
+    #print(f"Alice sends {format_state(state)} to Bob")
 
-    measured_state = protocol.measurement(state, bob_basis)
+    #measured_state = protocol.measurement(state, bob_basis)
     
-    print(f"Bob measures the state and gets {format_state(measured_state)}")
+    #print(f"Bob measures the state and gets {format_state(measured_state)}")
 
-    sifted_keys = protocol.key_sift(secret_key, measured_state, alice_basis, bob_basis)
+    #sifted_keys = protocol.key_sift(secret_key, measured_state, alice_basis, bob_basis)
 
-    print(f"Their shared key is {sifted_keys}")
-    erate = error_rate(sifted_keys)
+    #print(f"Their shared key is {sifted_keys}")
+    #erate = error_rate(sifted_keys)
 
-    print(f"Error rate is {erate}")
+    #print(f"Error rate is {erate}")
+    #commented out just in case we need to use it.
+
+    str_len = 10
+
+    alice = Alice(str_len)
+    bob = Bob(str_len)
+    eve = Eve(str_len)
+
+    protocol = BB84(alice, bob, eve)
+    print(protocol.run())
