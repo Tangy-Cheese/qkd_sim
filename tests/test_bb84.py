@@ -19,12 +19,11 @@ def test_no_eve():
 
     assert err_rate == 0.0
 
-def test_no_eve():
+def test_eve():
     """
     A BB84 protocol with an eavesdropper measuring each qubit
     has an error rate of ~25%
     """
-
     length = 10000  # use a large bitstring for testing
 
     alice = Alice(length)
@@ -32,10 +31,8 @@ def test_no_eve():
     eve = Eve(length)
 
     protocol = BB84(alice, bob, eve)
-
-    protocol = BB84(alice, bob, eve=None)
-
+    
     err_rate = error_rate(protocol.run())
 
-    assert np.allclose(err_rate, 0.25, rtol = 1e-1)
+    assert np.allclose(err_rate, 0.25, rtol = 1e-2)
 

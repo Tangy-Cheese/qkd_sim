@@ -68,7 +68,7 @@ class Eve:
     Eve measures each qubit in a random basis and resends the corresponding state, introducing errors.
     """
     def __init__(self, length:int):
-        
+
         self.length = length
 
     def rand_basis(self)->str:
@@ -275,11 +275,11 @@ if __name__ == "__main__":
     #print(f"Error rate is {erate}")
     #commented out just in case we need to use it.
 
-    str_len = 10
+    str_len = 1000000
 
     alice = Alice(str_len)
     bob = Bob(str_len)
     eve = Eve(str_len)
 
     protocol = BB84(alice, bob, eve)
-    print(protocol.run())
+    print(error_rate(protocol.run()))
