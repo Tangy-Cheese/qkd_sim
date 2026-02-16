@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from utils import error_rate, format_state
+from qkd.utils import error_rate, format_state
 
 class Alice:
     """
@@ -223,36 +223,6 @@ class BB84:
         return sifted_keys
 
 if __name__ == "__main__":
-
-    #Alice = Alice(5)
-    #Bob = Bob(5)
-
-    #secret_key = Alice.rand_key()
-    #alice_basis = Alice.rand_basis()
-
-    #bob_basis = Bob.rand_basis()
-
-    #print(f"Alice's key is {secret_key}")
-    #print(f"Alice's basis is {alice_basis}")
-
-    #print(f"Bob's random basis choices are {bob_basis}")
-              
-    #protocol = BB84(Alice, Bob, eve=None)
-    #state = protocol.quantum_encoding(secret_key, alice_basis)
-
-    #print(f"Alice sends {format_state(state)} to Bob")
-
-    #measured_state = protocol.measurement(state, bob_basis)
-    
-    #print(f"Bob measures the state and gets {format_state(measured_state)}")
-
-    #sifted_keys = protocol.key_sift(secret_key, measured_state, alice_basis, bob_basis)
-
-    #print(f"Their shared key is {sifted_keys}")
-    #erate = error_rate(sifted_keys)
-
-    #print(f"Error rate is {erate}")
-    #commented out just in case we need to use it.
 
     str_len = 1000000
 
