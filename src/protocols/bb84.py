@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from qkd.utils import error_rate, format_state
+from utils import error_rate, format_state
 
 class Participants:
     
@@ -183,7 +183,7 @@ class BB84:
         return (sifted_alice, sifted_bob)
     
     def run(self)->tuple[str, str]:
-        """_
+        """
         Running the protocol using the methods above.
 
         Returns
