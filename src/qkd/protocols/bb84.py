@@ -2,34 +2,8 @@ import numpy as np
 import random
 from qkd.utils import error_rate, format_state
 
-class Alice:
-    """
-    Alice generates a random raw key and a random basis string for BB84.
-    """
-    def __init__(self, length:int):
-        self.length = length
-
-    def rand_key(self)->str:
-
-        key = ""
-        for _ in range(self.length):
-            key += str(random.randint(0, 1))
-
-        return key
+class Participants:
     
-    def rand_basis(self)->str:
-
-        basis = ""
-        bases = ["X", "Z"]
-        for _ in range(self.length):
-            basis += random.choice(bases)
-              
-        return basis
-
-class Bob:
-    """ 
-    Bob chooses a random basis string and later measures incoming qubits
-    """
     def __init__(self, length:int):
         self. length = length
 
@@ -42,22 +16,32 @@ class Bob:
 
         return basis
 
-class Eve:
+class Alice(Participants):
+    """
+    Alice generates a random raw key and a random basis string for BB84.
+    """
+    def __init__(self, length:int):
+        super().__init__(length)
+
+    def rand_key(self)->str:
+
+        key = ""
+        for _ in range(self.length):
+            key += str(random.randint(0, 1))
+
+        return key
+
+class Bob(Participants):
+    """ 
+    Bob chooses a random basis string and later measures incoming qubits
+    """
+    pass
+
+class Eve(Participants):
     """ 
     Eve measures each qubit in a random basis and resends the corresponding state, introducing errors.
     """
-    def __init__(self, length:int):
-
-        self.length = length
-
-    def rand_basis(self)->str:
-
-        basis = ""
-        bases = ["X", "Z"]
-        for _ in range(self.length):
-            basis += random.choice(bases)
-
-        return basis
+    pass
 
 class BB84:
 
