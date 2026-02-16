@@ -1,5 +1,5 @@
 import pytest
-from qkd.protocols.bb84 import Alice, Bob, Eve, BB84, error_rate
+from protocols.bb84 import Alice, Bob, Eve, BB84, error_rate
 import numpy as np
 
 
