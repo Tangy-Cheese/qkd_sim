@@ -20,8 +20,6 @@ class Alice(Participants):
     """
     Alice generates a random raw key and a random basis string for BB84.
     """
-    def __init__(self, length:int):
-        super().__init__(length)
 
     def rand_key(self)->str:
 
