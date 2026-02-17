@@ -16,22 +16,22 @@ class Recievers:
         pass
 
 class Charlie:
-    
-    def __init__(self):
-        pass
+    """ 
+    I think we can actually keep this empty or not needed at all?
+    From what I can tell, Charlie sends the bell state 
 
-    def send_states(self):
+    1/sqrt(2) [|01> - |10>] = |psi^- >
 
-        pass
+    since the measurement outcome under any rotational basis is always 50/50.
+    """
+    pass
 
 class E91:
     
-    def __init__(self, alice:Recievers, bob:Recievers, charlie:Charlie):
+    def __init__(self, alice:Recievers, bob:Recievers):
 
         self.alice = alice
         self.bob = bob
-        self.charlie = charlie
-
 
 if __name__ == "__main__":
 
