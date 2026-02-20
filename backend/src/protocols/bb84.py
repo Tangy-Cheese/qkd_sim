@@ -1,6 +1,8 @@
 import numpy as np
 import random
-from ..utils import error_rate, format_state
+from utils import error_rate, format_state
+import json
+import os
 
 class Participants:
     
@@ -213,4 +215,27 @@ if __name__ == "__main__":
     eve = Eve(str_len)
 
     protocol = BB84(alice, bob, eve)
-    print(error_rate(protocol.run()))
+
+    e_rate = error_rate(protocol.run())
+
+    # write data as python dict
+    data = {"key_length":str_len,
+            "measurements":{
+                "error_rate":e_rate,
+                "key_rate": None
+            },
+            "protocol":"BB84"    
+    }
+    
+    json_data = json.dumps(data, sort_keys=True, indent=4) #turn it into json object
+
+    # get path to backend
+    backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    backend_root = os.path.dirname(backend_dir)
+
+    #direct into output with a filename data.json
+    path = os.path.join(backend_root, "output", "data.json")
+
+    #Write the json file into the specified path and name
+    with open(path, "w") as f:
+        f.write(json_data)
