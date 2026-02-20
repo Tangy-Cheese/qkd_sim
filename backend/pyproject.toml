@@ -12,7 +12,9 @@ keywords = ["QKD", "Quantum", "Quantum Cryptography"]
 dependencies = [
     "numpy>=1.20.0",
     "scipy",
-    "matplotlib>=3.5.0"
+    "matplotlib>=3.5.0",
+    "fastapi",
+    "uvicorn"
 ]
 license = { file = "LICENSE" }
 
