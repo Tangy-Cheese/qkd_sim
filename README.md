@@ -74,6 +74,6 @@ http://localhost:8000/docs
 
 ```bash
 cd frontend
-npm install
+npm ci #reads package-lock.json instead of 
 npm run dev
 ```
