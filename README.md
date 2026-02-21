@@ -67,7 +67,7 @@ http://localhost:8000/docs
 ## Frontend (React)
 
 ## Requirements
-- Node.js >= 18
+- Node.js >= 22
 - npm (or pnpm / yarn)
 
 ### Running the Frontend Page
