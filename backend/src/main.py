@@ -33,7 +33,7 @@ def simulate(data: dict)->dict:
 
     # write data as python dict
     result = {
-        "protocol":"BB84",
+        "protocol":protocol,
         "key_length":length,
             "measurements": {
                 "error_rate":e_rate,
