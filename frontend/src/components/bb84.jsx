@@ -73,7 +73,6 @@ export default function BB84({ handleReturnClick }) {
             {result && (
                 <div>
                 <h2>Simulation Result</h2>
-                <p>Key length: {result.key_length}</p>
                 <p>Error rate: {result.measurements.error_rate}</p>
                 </div>
             )}
