@@ -63,3 +63,17 @@ http://localhost:8000/docs
 > [!IMPORTANT]
 > To close the server, DON'T close the terminal. Had to spend ages fixing it when trying to rerun the server.
 > In the same terminal, exit using `ctrl + C`!
+
+## Frontend (React)
+
+## Requirements
+- Node.js >= 18
+- npm (or pnpm / yarn)
+
+### Running the Frontend Page
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
