@@ -10,7 +10,10 @@ app = FastAPI()
 # It will make more sense afterwards this is what allows javascript and python to interact I believe
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # only allow requests from this url
+    allow_origins=["http://localhost:5173"],  # only allow requests from this url
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 # Simulation route http://localhost:8000/simulation link react here

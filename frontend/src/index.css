@@ -4,7 +4,7 @@ body {
     align-items: center;
 }
 
-p, h1, button, label {
+p, h1, h2, h3, button, label {
     font-family: 'Courier New', Courier, monospace;
 }
 
