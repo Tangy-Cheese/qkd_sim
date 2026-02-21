@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from ..utils import error_rate, format_state
+from QKD_utils import error_rate, format_state
 import json
 import os
 
