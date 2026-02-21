@@ -9,6 +9,20 @@
     margin-bottom:3em;
 }
 
+#bb84Form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 2em;
+}
+
+#bb84FormElement {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
 #buttons {
     display: flex;
     flex-direction: row;
