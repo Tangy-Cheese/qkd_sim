@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from QKD_utils import error_rate, format_state
+from QKD_utils import error_rate, secure_key_rate
 import json
 import os
 
@@ -86,7 +86,12 @@ class Eve(Participants):
         eve_basis = self.rand_basis()
         eve_measured = Bob(self.length).measurement(state, eve_basis)
         return Alice(self.length).quantum_encoding(eve_measured, eve_basis)
-    
+
+class QuantumChannel:
+    def __init__(self):
+        pass
+    pass
+
 class BB84:
 
     def __init__(self, alice: Alice, bob: Bob, eve: Eve):
@@ -108,7 +113,7 @@ class BB84:
 
         return (sifted_alice, sifted_bob)
     
-    def run(self)->tuple[str, str]:
+    def run(self)->dict:
 
         secret_key = self.alice.rand_key()
         alice_basis = self.alice.rand_basis()
@@ -120,32 +125,41 @@ class BB84:
             state = eve._eavesdrop(alice_state)
 
         bob_measurment = bob.measurement(state, bob_basis)
-        sifted_keys = self.key_sift(secret_key, bob_measurment, alice_basis, bob_basis)
+        sifted_keys: tuple[str, str] = self.key_sift(secret_key, bob_measurment, alice_basis, bob_basis)
+        
+        err_r8 = error_rate(sifted_keys)
+        secure_key_r8 = secure_key_rate(err_r8)
 
-        return sifted_keys
+        results = {"key_length":len(secret_key),
+                   
+                "keys":{
+                    "sent_key":secret_key,
+                    "sifted_alice":sifted_keys[0],
+                    "sifted_bob":sifted_keys[1]
+                },
+            
+                "measurements":{
+                    "error_rate":err_r8,
+                    "secure_key_rate": secure_key_r8
+                },
+
+                "protocol":"BB84"    
+        }   
+    
+        return results
 
 if __name__ == "__main__":
 
-    str_len = 1000000
+    str_len = 128
 
     alice = Alice(str_len)
     bob = Bob(str_len)
     eve = Eve(str_len)
 
     protocol = BB84(alice, bob, eve)
-
-    e_rate = error_rate(protocol.run())
-
-    # write data as python dict
-    data = {"key_length":str_len,
-            "measurements":{
-                "error_rate":e_rate,
-                "key_rate": None
-            },
-            "protocol":"BB84"    
-    }
+    results = protocol.run()
     
-    json_data = json.dumps(data, sort_keys=True, indent=4) #turn it into json object
+    json_data = json.dumps(results, sort_keys=True, indent=4) #turn it into json object
 
     # get path to backend
     backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

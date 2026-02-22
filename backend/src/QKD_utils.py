@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 def format_state(state:str)->str:
     kets = ""
@@ -21,3 +22,13 @@ def error_rate(keys:tuple[str,str])->float:
     rate = errors/len(a_key)
 
     return rate
+
+def binary_entropy(err_rate:float)->float: 
+    Q = err_rate
+    H = -Q*np.log2(Q) - (1-Q)*np.log2(1-Q)
+
+    return H
+
+def secure_key_rate(err_rate:float)->float:
+    
+    return 1 - 2*binary_entropy(err_rate)
