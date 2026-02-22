@@ -6,7 +6,7 @@ import os
 
 class Participants:
     
-    def __init__(self, length:int):
+    def __init__(self, length:int)->None:
         self.length = length
 
     def rand_basis(self)->str:
@@ -81,23 +81,34 @@ class Bob(Participants):
 
 class Eve(Participants):
 
-    def _eavesdrop(self, state: str)->str:
+    def eavesdrop(self, state: str)->str:
 
         eve_basis = self.rand_basis()
         eve_measured = Bob(self.length).measurement(state, eve_basis)
+
         return Alice(self.length).quantum_encoding(eve_measured, eve_basis)
 
-class QuantumChannel:
-    def __init__(self):
-        pass
-    pass
+class Channel:
+
+    def __init__(self,  eve: Eve, distance:int, fibre_attenuation=None)->None:
+
+        self.eve = eve
+        self.distance = distance
+        self.attenuation = fibre_attenuation
+
+    def transmit(self, state:str)->str:
+        if self.eve:
+            state = self.eve.eavesdrop(state)
+
+        return state
 
 class BB84:
 
-    def __init__(self, alice: Alice, bob: Bob, eve: Eve):
+    def __init__(self, alice: Alice, bob: Bob, channel: Channel)->None:
         self.alice = alice
         self.bob = bob
         self.eve = eve
+        self.channel = channel
 
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
@@ -114,22 +125,29 @@ class BB84:
         return (sifted_alice, sifted_bob)
     
     def run(self)->dict:
-
-        secret_key = self.alice.rand_key()
-        alice_basis = self.alice.rand_basis()
-        bob_basis = self.bob.rand_basis()
         
-        alice_state = alice.quantum_encoding(secret_key, alice_basis)
+        #Alice generates secret bit key
+        secret_key = self.alice.rand_key()
 
-        if self.eve is not None:
-            state = eve._eavesdrop(alice_state)
+        #Alice encodes her bit key onto quantum states with random Bases
+        alice_basis = self.alice.rand_basis()
+        alice_state = self.alice.quantum_encoding(secret_key, alice_basis)
 
-        bob_measurment = bob.measurement(state, bob_basis)
+        #Alice transmits them through the quantum channel
+        alice_state = self.channel.transmit(alice_state)
+
+        #Bob recieves the quantum states and measures them with random bases
+        bob_basis = self.bob.rand_basis()
+        bob_measurment = self.bob.measurement(alice_state, bob_basis)
+
+        #Alice and bob publically compare bases and sift through matching ones
         sifted_keys: tuple[str, str] = self.key_sift(secret_key, bob_measurment, alice_basis, bob_basis)
         
+        #Calculating error rate and key rate from the sifted keys
         err_r8 = error_rate(sifted_keys)
         secure_key_r8 = secure_key_rate(err_r8)
 
+        #Python dict results
         results = {"key_length":len(secret_key),
                    
                 "keys":{
@@ -155,8 +173,9 @@ if __name__ == "__main__":
     alice = Alice(str_len)
     bob = Bob(str_len)
     eve = Eve(str_len)
+    channel = Channel(eve, 100)
 
-    protocol = BB84(alice, bob, eve)
+    protocol = BB84(alice, bob, channel)
     results = protocol.run()
     
     json_data = json.dumps(results, sort_keys=True, indent=4) #turn it into json object
