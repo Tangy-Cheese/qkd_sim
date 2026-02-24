@@ -23,11 +23,10 @@ def error_rate(keys:tuple[str,str])->float:
 
     return rate
 
-#edge cases need to put, eg qhen err rate is 0
 def binary_entropy(err_rate:float)->float: 
 
-    if err_rate == 0:
-        pass
+    if err_rate == 0 or err_rate == 1:
+        return 0
     
     Q = err_rate
     H = -Q*np.log2(Q) - (1-Q)*np.log2(1-Q)

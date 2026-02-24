@@ -81,7 +81,7 @@ class Bob(Participants):
 
 class Eve(Participants):
 
-    def eavesdrop(self, state: str)->str:
+    def _eavesdrop(self, state: str)->str:
 
         eve_basis = self.rand_basis()
         eve_measured = Bob(self.length).measurement(state, eve_basis)
@@ -90,15 +90,19 @@ class Eve(Participants):
 
 class Channel:
 
-    def __init__(self,  eve: Eve, distance:int, fibre_attenuation=None)->None:
+    def __init__(self,  eve: Eve, distance:int, fibre_attenuation=float)->None:
 
         self.eve = eve
-        self.distance = distance
+        self.distance = distance #km
         self.attenuation = fibre_attenuation
+
+    def photon_attenuation(self)->float:        
+        survival_prob = np.pow(10,((-self.attenuation * self.distance)/10))
+        return survival_prob
 
     def transmit(self, state:str)->str:
         if self.eve:
-            state = self.eve.eavesdrop(state)
+            state = self.eve._eavesdrop(state)
 
         return state
 
@@ -107,7 +111,6 @@ class BB84:
     def __init__(self, alice: Alice, bob: Bob, channel: Channel)->None:
         self.alice = alice
         self.bob = bob
-        self.eve = eve
         self.channel = channel
 
         if bob.length != alice.length:
@@ -173,7 +176,8 @@ if __name__ == "__main__":
     alice = Alice(str_len)
     bob = Bob(str_len)
     eve = Eve(str_len)
-    channel = Channel(eve, 100)
+    
+    channel = Channel(eve, 122, 0.2)
 
     protocol = BB84(alice, bob, channel)
     results = protocol.run()
@@ -185,7 +189,7 @@ if __name__ == "__main__":
     backend_root = os.path.dirname(backend_dir)
 
     #direct into output with a filename data.json
-    path = os.path.join(backend_root, "output", "data.json")
+    path = os.path.join(backend_root, "output", "eve.json")
 
     #Write the json file into the specified path and name
     with open(path, "w") as f:
