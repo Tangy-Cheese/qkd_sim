@@ -58,24 +58,29 @@ class Bob(Participants):
         measured_state = ""
 
         for qubit,base in zip(state,basis):
-            
-            coin_flip = random.randint(0, 1)
-
-            if (qubit == "0" or qubit == "1") and base == "Z":
-                measured_state += qubit
+                
+            if qubit == "_":
+                measured_state += "_"
                 continue
 
-            if (qubit == "+" or qubit == "-") and base == "Z":
-                measured_state += str(coin_flip)
-                continue
+            else:
+                coin_flip = random.randint(0, 1)
 
-            if (qubit == "0" or qubit == "1") and base == "X":
-                measured_state += str(coin_flip)
-                continue
+                if (qubit == "0" or qubit == "1") and base == "Z":
+                    measured_state += qubit
+                    continue
 
-            if (qubit == "+" or qubit == "-") and base == "X":
-                measured_state += "0" if qubit =="+" else "1"
-                continue
+                if (qubit == "+" or qubit == "-") and base == "Z":
+                    measured_state += str(coin_flip)
+                    continue
+
+                if (qubit == "0" or qubit == "1") and base == "X":
+                    measured_state += str(coin_flip)
+                    continue
+
+                if (qubit == "+" or qubit == "-") and base == "X":
+                    measured_state += "0" if qubit =="+" else "1"
+                    continue
         
         return measured_state
 
@@ -104,7 +109,13 @@ class Channel:
         if self.eve:
             state = self.eve._eavesdrop(state)
 
-        return state
+        photon_survival = self.photon_attenuation()
+        
+        channel_state = ""
+        for i in state:
+            channel_state += np.random.choice((i, "_"), p=(photon_survival, 1-photon_survival))
+
+        return channel_state
 
 class BB84:
 
@@ -121,9 +132,18 @@ class BB84:
         str_length = len(key_1)
         if str_length != len(key_2):
             raise Exception("Keys need to be the same length when sifted.")
+                
+        sifted_alice = "".join(
+            key_1[i] 
+            for i in range(str_length)
+            if key_2[i] != "_" and basis_1[i] == basis_2[i]
+        )
 
-        sifted_alice = "".join(key_1[i] if basis_1[i] == basis_2[i] else "" for i in range(str_length))
-        sifted_bob = "".join(key_2[i] if basis_1[i] == basis_2[i] else "" for i in range(str_length))
+        sifted_bob = "".join(
+            key_2[i] 
+            for i in range(str_length)
+            if key_2[i] != "_" and basis_1[i] == basis_2[i]
+        )
 
         return (sifted_alice, sifted_bob)
     
@@ -154,12 +174,17 @@ class BB84:
         results = {"key_length":len(secret_key),
                    
                 "keys":{
-                    "sent_key":secret_key,
                     "sifted_alice":sifted_keys[0],
                     "sifted_bob":sifted_keys[1]
                 },
-            
+
+                "parameters":{
+                    "distance_km": self.channel.distance,
+                    "fibre_attenuation": self.channel.attenuation  
+                },
+
                 "measurements":{
+                    "shared_key_length":len(sifted_keys[0]),
                     "error_rate":err_r8,
                     "secure_key_rate": secure_key_r8
                 },
@@ -171,7 +196,7 @@ class BB84:
 
 if __name__ == "__main__":
 
-    str_len = 128
+    str_len = 100000
 
     alice = Alice(str_len)
     bob = Bob(str_len)
