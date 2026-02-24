@@ -53,6 +53,16 @@ class Alice(Participants):
 
 class Bob(Participants):
 
+    def __init__(self, length:int, dark_count_rate:float)->None:
+
+        super().__init__(length)
+        self.dc_rate = dark_count_rate
+
+    def dark_counts(self)->str:
+        measure = np.random.choice(("0", "1", "_"), p=(self.dc_rate/2, self.dc_rate/2, 1-self.dc_rate))
+
+        return measure
+
     def measurement(self, state:str, basis:str)->str:
 
         measured_state = ""
@@ -60,7 +70,7 @@ class Bob(Participants):
         for qubit,base in zip(state,basis):
                 
             if qubit == "_":
-                measured_state += "_"
+                measured_state += self.dark_counts()
                 continue
 
             else:
@@ -89,7 +99,7 @@ class Eve(Participants):
     def _eavesdrop(self, state: str)->str:
 
         eve_basis = self.rand_basis()
-        eve_measured = Bob(self.length).measurement(state, eve_basis)
+        eve_measured = Bob(self.length, 0).measurement(state, eve_basis)
 
         return Alice(self.length).quantum_encoding(eve_measured, eve_basis)
 
@@ -180,7 +190,8 @@ class BB84:
 
                 "parameters":{
                     "distance_km": self.channel.distance,
-                    "fibre_attenuation": self.channel.attenuation  
+                    "fibre_attenuation": self.channel.attenuation,
+                    "dark_count_rate": self.bob.dc_rate  
                 },
 
                 "measurements":{
@@ -199,23 +210,30 @@ if __name__ == "__main__":
     str_len = 100000
 
     alice = Alice(str_len)
-    bob = Bob(str_len)
+    bob = Bob(str_len, 1e-3)
     eve = Eve(str_len)
     
-    channel = Channel(eve, 122, 0.2)
+    #without eve
+    channel_clean = Channel(None, 122, 0.2)
+    protocol_clean = BB84(alice, bob, channel_clean)
+    results_clean = protocol_clean.run()
 
-    protocol = BB84(alice, bob, channel)
-    results = protocol.run()
-    
-    json_data = json.dumps(results, sort_keys=True, indent=4) #turn it into json object
+    # with eve
+    channel_eavesdropper = Channel(eve, 122, 0.2)
+    protocol_eavesdropper = BB84(alice, bob, channel_eavesdropper)
+    results_eavesdropper = protocol_eavesdropper.run()
 
-    # get path to backend
-    backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    backend_root = os.path.dirname(backend_dir)
+    for i,j in ("clean", results_clean), ("eve", results_eavesdropper):
 
-    #direct into output with a filename data.json
-    path = os.path.join(backend_root, "output", "eve.json")
+        json_data = json.dumps(j, sort_keys=True, indent=4) #turn it into json object
 
-    #Write the json file into the specified path and name
-    with open(path, "w") as f:
-        f.write(json_data)
+        # get path to backend
+        backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        backend_root = os.path.dirname(backend_dir)
+
+        #direct into output with a filename data.json
+        path = os.path.join(backend_root, "output", f"{i}.json")
+
+        #Write the json file into the specified path and name
+        with open(path, "w") as f:
+            f.write(json_data)
