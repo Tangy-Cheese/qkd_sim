@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from protocols.bb84 import Alice, Bob, Eve, BB84, error_rate
+from protocols.bb84 import Alice, Bob, Eve, Channel, BB84, error_rate
 
 app = FastAPI()
 
@@ -30,18 +30,9 @@ def simulate(data: dict)->dict:
     if eavesdropper == True:
         eve = Eve(length)
 
-    simulate = BB84(alice, bob, eve)
+    channel = Channel(eve, 122, 0.2)
 
-    e_rate = error_rate(simulate.run())
-
-    # write data as python dict
-    result = {
-        "protocol":protocol,
-        "key_length":length,
-            "measurements": {
-                "error_rate":e_rate,
-                "key_rate": None
-            }   
-    }
+    protocol = BB84(alice, bob, channel)
+    results = protocol.run()
     
-    return result #fastapi should send this as JSON
+    return results #fastapi should send this as JSON
