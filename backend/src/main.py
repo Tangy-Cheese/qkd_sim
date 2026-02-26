@@ -20,17 +20,19 @@ app.add_middleware(
 @app.post("/simulation")
 def simulate(data: dict)->dict:
     protocol = data.get("protocol")
-    length = data.get("length")
+    key_length = data.get("key_length")
+    fibre_length = data.get("fibre_length")
+    fibre_attenuation = data.get("fibre_attenuation")*10**(-3)
     eavesdropper = data.get("eve", False)
 
-    alice = Alice(length)
-    bob = Bob(length)
+    alice = Alice(key_length)
+    bob = Bob(key_length, dark_count_rate=0.08)
     eve = None 
 
     if eavesdropper == True:
-        eve = Eve(length)
+        eve = Eve(key_length)
 
-    channel = Channel(eve, 122, 0.2)
+    channel = Channel(eve, fibre_length, fibre_attenuation)
 
     protocol = BB84(alice, bob, channel)
     results = protocol.run()
