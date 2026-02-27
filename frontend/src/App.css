@@ -23,6 +23,18 @@
     gap: 0.5em;
 }
 
+#results{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    text-align: left;
+    margin-top:-1em;
+}
+
+#results_wrapper{
+    text-align: center;
+}
+
 .buttons {
     display: flex;
     flex-direction: row;

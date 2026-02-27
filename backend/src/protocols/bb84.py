@@ -112,7 +112,7 @@ class Channel:
         self.attenuation = fibre_attenuation
 
     def photon_attenuation(self)->float:        
-        survival_prob = np.pow(10,((-self.attenuation * self.distance)/10))
+        survival_prob = pow(10,((-self.attenuation * self.distance)/10))
         return survival_prob
 
     def transmit(self, state:str)->str:
