@@ -104,13 +104,16 @@ class Eve(Participants):
         return Alice(self.length).quantum_encoding(eve_measured, eve_basis)
 
 class Channel:
-"""
-Need to add sender reciever in attributes to agree with network.py
-Not sure how to go about it any other way
-"""
-    def __init__(self,  eve: Eve, distance:int, fibre_attenuation=float)->None:
+    
+    """
+    Need to add sender reciever in attributes to agree with network.py
+    Not sure how to go about it any other way
+    """
+    def __init__(self,  eve: Eve | None, distance:int, fibre_attenuation:float)->None:
+        
+        if eve:
+            self.eve = eve
 
-        self.eve = eve
         self.distance = distance #km
         self.attenuation = fibre_attenuation
 
