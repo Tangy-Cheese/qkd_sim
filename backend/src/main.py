@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
-from protocols.bb84 import Alice, Bob, Eve, Channel, BB84, error_rate
+from protocols.bb84 import Alice, Bob, Eve, Channel, BB84 
 
 app = FastAPI()
 
@@ -20,8 +19,8 @@ app.add_middleware(
 @app.post("/simulation")
 def simulate(data: dict)->dict:
     protocol = data.get("protocol")
-    key_length = data.get("key_length")
-    fibre_length = data.get("fibre_length")
+    key_length: int =  data.get("key_length")
+    fibre_length: int = data.get("fibre_length")
     fibre_attenuation = data.get("fibre_attenuation")*10**(-3)
     eavesdropper = data.get("eve", False)
 

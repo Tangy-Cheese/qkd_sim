@@ -14,7 +14,8 @@ dependencies = [
     "scipy",
     "matplotlib>=3.5.0",
     "fastapi",
-    "uvicorn"
+    "uvicorn",
+    "networkx"
 ]
 license = { file = "LICENSE" }
 
