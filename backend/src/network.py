@@ -28,7 +28,7 @@ class Network:
     Edge: Channel 
     Weight: Channel object containing QBER, key rate, photon loss
     """
-    def __init__(self, nodes:list, links:list[Edge])->None:
+    def __init__(self, nodes:list[Node], links:list[Edge])->None:
         
         self.nodes = nodes
         self.links = links 
@@ -53,29 +53,51 @@ class Network:
             self.graph[b].append((a, edge))
         
     def matrixify_list(self)->np.ndarray:
-        
+
         adj_mat = np.zeros((len(self.nodes), len(self.nodes)), dtype=Channel)
         
-        node_to_idx = {node: i for i, node in enumerate(nodes)}
+        node_to_idx = {}
 
-        for u, v, t in edges:
-            i = node_to_idx[u]
-            j = node_to_idx[v]
-            weight = 
+        for link in self.links:
 
-        adj_mat[i, j] = weight
-        adj_mat[j, i] = weight 
+            i = node_to_idx[link.node_1]
+            j = node_to_idx[link.node_2]
+
+            adj_mat[i,j] = adj_mat[j,i] = link.channel
 
         return adj_mat
 
     def __add__(self, other:"Network")->"Network":
         
+        """
+        Add multiple networks by increasing the list of nodes
+        Adding a list of edge relationships to the existing list
 
-        #adding networks will inevitably assume that the channels are added likewise
-        # Meaning a __add__() will need to be created for channels.
-        #might not make too much sense but will come back to it.
-        pass
-  
+        Any of the adj matrices, lists whatever is preserved in this new network objects via the methods
+        adj_list(), matrixify_list()
+        """
+
+        #for the case of duplicate nodes, we remove duplicates
+        node_map = {}
+    
+        for node in self.nodes + other.nodes:
+            node_map[node.identity] = node
+
+        new_nodes = list(node_map.values())
+       
+        """
+        Links is more complicated, since we want to minimise the photon loss, qber etc.
+        I think a viable approach would be to calculate using `BB84`sim the better line (since remember its not just distance based but attenuation based too) and choose that.
+
+        For now lets assume that the other network wont have an edge with the same nodes.
+        But this needs to be changed.
+        """
+        new_links = []
+        new_links.extend(self.links)
+        new_links.extend(other.links)
+         
+        return Network(new_nodes, new_links)
+
     def visualise(self)->None:
         
         G = nx.Graph() 
