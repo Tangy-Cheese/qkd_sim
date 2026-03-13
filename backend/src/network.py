@@ -34,7 +34,6 @@ class Network:
         self.links = links 
         self.graph = {}
         self.adj_list()
-        self.adj_mat = self.matrixify_list()
 
     def adj_list(self)->None:
         
@@ -128,9 +127,10 @@ class Network:
 
 class NetAlgorithms:
 
-    def __init__(self,):
-        pass
-
+    def __init__(self, network: Network)->None:
+        
+        self.network = network 
+        
     def dijkstra(self,):
         #since we wanna maximise the skr, we need to minimise the qber, so we m
         pass
