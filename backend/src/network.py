@@ -146,9 +146,9 @@ class Network:
                 
                 if neighbour not in visited:
                    
-                    visited.add(neighbour)
+                    visited.add(neighbour) # Exists so that the loop doesnt go on forever
                     parent[neighbour] = curr
-                    queue.append(neighbour)
+                    queue.append(neighbour) #The queue will as a result order the 1depth nodes to be searched first as all neighbours of curr need to be visited before moving on.
 
         if target not in visited: #In the case that the target is disconnected from the network.
             return []
@@ -156,7 +156,7 @@ class Network:
         #last node
         path = [target]
 
-        while path[-1] != root:
+        while path[-1] != root: # Keep walking backwards to build the path.
             path.append(parent[path[-1]])
 
         path.reverse()
