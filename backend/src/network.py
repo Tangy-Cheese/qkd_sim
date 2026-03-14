@@ -123,7 +123,45 @@ class Network:
         nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
 
         plt.show()
+        
+    def bfs_search(self, root:str, target:str)->list[str]:
+        """
+        To find the shortest path between two nodes in terms of no. edges
+        """
+        queue = [root] #Start off w root search
+        visited = set() 
+        visited.add(root)
+        parent = {} #BFS tree
+        
+        while queue:
+           
+            curr = queue.pop(0) #remove the first el of queue and assigns it to curr
 
+            if curr == target: #Stop the search at destination
+                break
+
+            for next in self.graph[curr]: #each key of the graph is in the form of a tuple where the first el is the neighbour node.
+              
+                neighbour = next[0]
+                
+                if neighbour not in visited:
+                   
+                    visited.add(neighbour)
+                    parent[neighbour] = curr
+                    queue.append(neighbour)
+
+        if target not in visited: #In the case that the target is disconnected from the network.
+            return []
+        
+        #last node
+        path = [target]
+
+        while path[-1] != root:
+            path.append(parent[path[-1]])
+
+        path.reverse()
+        
+        return path
 
 class NetAlgorithms:
 
