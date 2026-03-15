@@ -2,7 +2,6 @@ import numpy as np
 from protocols.bb84 import Channel, Eve
 import networkx as nx
 import matplotlib.pyplot as plt
-from networkx import draw
 
 class Node:
 

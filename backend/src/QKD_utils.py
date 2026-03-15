@@ -36,3 +36,27 @@ def binary_entropy(err_rate:float)->float:
 def secure_key_rate(err_rate:float)->float:
     
     return 1 - 2*binary_entropy(err_rate)
+
+
+def XOR(bitstr1:str, bitstr2:str)->str:
+    
+    if len(bitstr1) != len(bitstr2):
+        raise Exception("Stoopid strings no same length")
+   
+    outcome = ""
+
+    for bit1, bit2 in zip(bitstr1, bitstr2):
+        if bit1 == bit2:
+            outcome += "0" 
+
+        else:
+            outcome += "1"
+
+    return outcome
+
+
+
+
+
+
+
