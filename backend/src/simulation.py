@@ -37,13 +37,12 @@ class Simulation:
                 """
                 NOTE: nodes have attributs SKR, QBER
                 might refactor to have these as hidden attributes in Channel class instead.
-
-                More importantly, the Nodes have attributes key, which is very important.
+More importantly, the Nodes have attributes key, which is very important.
                 """
                 
                 #We add key attributes to the nodes
-                sending_node.key = result["keys"]["sifted_alice"]
-                recieving_node.key = result["keys"]["sifted_bob"]
+                sending_node.key = result["keys"]["secure_key"]
+                recieving_node.key = result["keys"]["secure_key"]
 
                 #ADding attributes to channel now
                 link.qber = result["measurements"]["error_rate"]
@@ -77,7 +76,7 @@ if __name__ == "__main__":
 
     sim = Simulation(network)
 
-    #sim.run()
+    sim.run(Adam, Kyle, 1000000, 0.01)
 
 
 

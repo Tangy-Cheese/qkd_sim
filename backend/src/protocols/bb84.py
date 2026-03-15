@@ -149,7 +149,9 @@ class BB84:
 
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
-        
+       
+        self.results = self.run()
+
     def key_sift(self, key_1:str, key_2:str, basis_1:str, basis_2:str)->tuple[str, str]:
 
         str_length = len(key_1)
@@ -169,7 +171,23 @@ class BB84:
         )
 
         return (sifted_alice, sifted_bob)
+
+
+    def error_correction(self, alice_sifted:str, qber:float)->str:
+        
+            
+        corrected_key = ""
+
+        return corrected_key 
+
     
+    def privacy_amplification(self, key:str)->str:
+            
+        
+        private_key = ""
+        return private_key 
+
+
     def run(self)->dict:
         
         #Alice generates secret bit key
@@ -192,13 +210,21 @@ class BB84:
         #Calculating error rate and key rate from the sifted keys
         err_r8 = error_rate(sifted_keys)
         secure_key_r8 = secure_key_rate(err_r8)
+        
+        corrected_key = self.error_correction(sifted_keys[0], err_r8)
+
+        secure_key = self.privacy_amplification(corrected_key)
 
         #Python dict results
         results = {"key_length":len(secret_key),
                    
                 "keys":{
                     "sifted_alice":sifted_keys[0],
-                    "sifted_bob":sifted_keys[1]
+                    "sifted_bob":sifted_keys[1],
+
+                   "corrected_key":corrected_key,
+                   
+                   "secure_key":secure_key
                 },
 
                 "parameters":{
@@ -217,7 +243,7 @@ class BB84:
         }   
     
         return results
-
+    
 if __name__ == "__main__":
 
     str_len = 100000
