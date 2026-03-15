@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from QKD_utils import error_rate, secure_key_rate
+from QKD_utils import error_rate, secure_key_rate, binary_entropy
 import json
 import os
 
@@ -193,16 +193,30 @@ class BB84:
         errors and evens any ambiguous parity comparisons.
         """
         
-        k_len = len(alice_sifted)
+        n = len(alice_sifted)
+   
+        f_ec = 1.15 #Arbitrary value from chatGPT... Should look a bit more into this
 
-        return corrected_key 
-
-    
-    def privacy_amplification(self, key:str)->str:
-            
+        # fraction of bits leaked during EC
+        leak_fraction = f_ec * binary_entropy(qber)
+        corrected_length = int(n * (1 - leak_fraction))
+       
+        #Random permuation of Alice's sifted key
+        arr = np.array(list(alice_sifted))
+        np.random.shuffle(arr)
+        permuted_key = "".join(arr)
         
-        private_key = ""
-        return private_key 
+        #Any slice of the randomly permuted key to remove leaked bits
+        corrected_key = permuted_key[:corrected_length]
+
+        return corrected_key
+
+    #def privacy_amplification(self, key:str)->str:
+        
+        
+        
+      #  private_key = ""
+     #   return private_key 
 
 
     def run(self)->dict:
@@ -230,7 +244,7 @@ class BB84:
         
         corrected_key = self.error_correction(sifted_keys[0], err_r8)
 
-        secure_key = self.privacy_amplification(corrected_key)
+       # secure_key = self.privacy_amplification(corrected_key)
 
         #Python dict results
         results = {"key_length":len(secret_key),
@@ -241,7 +255,7 @@ class BB84:
 
                    "corrected_key":corrected_key,
                    
-                   "secure_key":secure_key
+ #                  "secure_key":secure_key
                 },
 
                 "parameters":{
