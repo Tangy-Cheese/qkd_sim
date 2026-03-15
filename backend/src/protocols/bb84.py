@@ -175,8 +175,25 @@ class BB84:
 
     def error_correction(self, alice_sifted:str, qber:float)->str:
         
-            
-        corrected_key = ""
+        """
+        Error correction involves parity exchange. While we could model this, because there 
+        is no error associated with this, we can just take the outcome of the parity exchange 
+        corrections to be Alice's string.
+
+        Steps of Error correction simplified:
+
+        1. Key is split into blocks and the parity of each block is computed.
+        2. Bob computes his parity. If the parity is the same then, they know 
+        that either they have the same string, or the same number of errors.
+        3. Parity block mismatch means there is certainly an error, which is 
+        located using binary search. 
+        4. Bob's bit is flipped to match Alice's and they would theoretically
+        end up with identical strings.
+        5. Permuted keys and using different block sizes etc catches all the
+        errors and evens any ambiguous parity comparisons.
+        """
+        
+        k_len = len(alice_sifted)
 
         return corrected_key 
 
