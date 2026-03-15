@@ -9,30 +9,53 @@ class Simulation:
 
         self.network = network
 
-    def run(self, root:str, target:str, key_length:int, dark_count_rate:float)->str|None:
+    def run(self, root:nw.Node, target:nw.Node, key_length:int, dark_count_rate:float)->None:
         """
         dark_count rate needs to be modified as each node dark count rate can be different. !!!!!
         """
-        path = self.network.bfs_search(root, target)
-        
+        path = self.network.bfs_search(root, target) #list of nodes
+       
         for i in range(len(path)-1):
             
-            if self.network.graph[path[i]][0] == path[i+1]:
+            sending_node = path[i]
+            recieving_node = path[i+1]
+            #consecutive node labelling
 
-                link = self.network.graph[path[i]][1]
+            if self.network.graph[sending_node][0] == recieving_node:
+                #this checks the corresponoding channel for the first two nodes in the list
 
-                sending_node = protocols.bb84.Alice(key_length)
-                recieving_node = protocols.bb84.Bob(key_length, dark_count_rate)
+                link = self.network.graph[path[i]][1] 
+                #if it is then take the next element of that key which is the channel for those two
 
+                sender = protocols.bb84.Alice(key_length) #model the first node as alice
+                reciever = protocols.bb84.Bob(key_length, dark_count_rate) #model the second as bob
 
-                net = protocols.bb84.BB84(sending_node, recieving_node, link)
-                result = net.run() 
+                net = protocols.bb84.BB84(sender, reciever, link)
+                #simulate the two nodes with bb84 and retrive the results
+                result = net.run() #dict form 
+
+                """
+                NOTE: nodes have attributs SKR, QBER
+                might refactor to have these as hidden attributes in Channel class instead.
+
+                More importantly, the Nodes have attributes key, which is very important.
+                """
                 
-                del sending_node
-                del recieving_node
+                #We add key attributes to the nodes
+                sending_node.key = result["keys"]["sifted_alice"]
+                recieving_node.key = result["keys"]["sifted_bob"]
+
+                #ADding attributes to channel now
+                link.qber = result["measurements"]["error_rate"]
+                link.skr = result["measurements"]["secure_key_rate"]
                 
-                pass   
-        #return shared_key
+                del sender
+                del reciever
+    
+    def evaluate_path_security(self)->None:
+        
+        pass
+
 
 if __name__ == "__main__":
     

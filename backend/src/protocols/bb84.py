@@ -116,6 +116,13 @@ class Channel:
 
         self.distance = distance #km
         self.attenuation = fibre_attenuation
+        
+        """
+        NEW CHANNEL ATTRIBUTES
+        """
+        self.qber = []
+        self.skr = []
+
 
     def photon_attenuation(self)->float:        
         survival_prob = pow(10,((-self.attenuation * self.distance)/10))

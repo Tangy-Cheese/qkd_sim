@@ -9,9 +9,6 @@ class Node:
         
         self.identity = identity
         self.key = []
-        self.qber = []
-        self.skr = []
-        
 
 class Edge:
 
@@ -123,7 +120,7 @@ class Network:
 
         plt.show()
         
-    def bfs_search(self, root:str, target:str)->list[str]:
+    def bfs_search(self, root:Node, target:Node)->list[Node]:
         """
         To find the shortest path between two nodes in terms of no. edges
         """
@@ -159,8 +156,8 @@ class Network:
             path.append(parent[path[-1]])
 
         path.reverse()
-        
-        return path
+       
+        return path 
 
 class NetAlgorithms:
 
