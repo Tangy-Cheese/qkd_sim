@@ -41,8 +41,8 @@ More importantly, the Nodes have attributes key, which is very important.
                 """
                 
                 #We add key attributes to the nodes
-                sending_node.key = result["keys"]["secure_key"]
-                recieving_node.key = result["keys"]["secure_key"]
+                sending_node.key = result["keys"]["corrected_key"]
+                recieving_node.key = result["keys"]["corrected_key"]
 
                 #ADding attributes to channel now
                 link.qber = result["measurements"]["error_rate"]
@@ -51,10 +51,28 @@ More importantly, the Nodes have attributes key, which is very important.
                 del sender
                 del reciever
     
-    def evaluate_path_security(self)->None:
+    def evaluate_path_security(self, root:str, target:str)->dict:
+       
         
-        pass
 
+        results = {
+            "root" : root,
+            "target" : target,
+
+            "network":{
+                "distance": ....,
+                "number_of_secure_nodes": ...,
+            },
+
+            outcomes:
+
+
+
+
+        }
+
+
+        return results
 
 if __name__ == "__main__":
     
