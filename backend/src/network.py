@@ -4,16 +4,38 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class Node:
+    """Each node represents Alice and/or Bob in a networked system
 
+    :param identity: The identity is just characterised as a name of string form
+    :param key: Each node has an attribute that is empty initially. But this stores the 
+        keys that result from the run that the network class enforces.
+    """
     def __init__(self, identity:str)->None:
-        
+        """Class constructor for each node 
+
+        :param identity: String of name
+        """
         self.identity = identity
         self.key = []
 
 class Edge:
+    """In a graph, each edge represents a link between two nodes. Or in the instance of Quantum Key
+    Distribution, the presence of a quantum channel.
 
+    :param node_1: A node which can either send or recieve
+    :param node_2: A second node which can either send or recieve
+    :param channel: The quantum channel which links the two nodes, characterised by the channel class 
+        from protocols/bb84.py
+    """
     def __init__(self, node_1: Node, node_2:Node, distance:int, attenuation:float, eve: Eve | None)->None:
-        
+        """Edge class constructor
+
+        :param node_1: 
+        :param node_2: 
+        :param distance: 
+        :param attenuation: 
+        :param eve: 
+        """
         self.node_1 = node_1
         self.node_2 = node_2 
         
@@ -21,18 +43,29 @@ class Edge:
  
 class Network:
     """
+
+    :param nodes: 
+    :param links: 
+    :param graph: 
+    """
+    """
     Edge: Channel 
     Weight: Channel object containing QBER, key rate, photon loss
     """
     def __init__(self, nodes:list[Node], links:list[Edge])->None:
-        
+        """
+
+        :param nodes: 
+        :param links: 
+        """
         self.nodes = nodes
         self.links = links 
         self.graph = {}
         self.adj_list()
 
     def adj_list(self)->None:
-        
+        """
+        """
         for node in self.nodes:
             
             self.graph[node] = []
@@ -48,7 +81,10 @@ class Network:
             self.graph[b].append((a, edge))
         
     def matrixify_list(self)->np.ndarray:
+        """
 
+        :return: 
+        """
         adj_mat = np.zeros((len(self.nodes), len(self.nodes)), dtype=Channel)
         
         node_to_idx = {}
@@ -94,7 +130,8 @@ class Network:
         return Network(new_nodes, new_links)
 
     def visualise(self)->None:
-        
+        """
+        """
         G = nx.Graph() 
         
         for node in self.nodes:
@@ -160,7 +197,10 @@ class Network:
         return path 
 
 class NetAlgorithms:
+    """
 
+    :param network: 
+    """
     def __init__(self, network: Network)->None:
         
         self.network = network 
