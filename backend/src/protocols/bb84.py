@@ -281,7 +281,6 @@ class BB84:
 
 
     def error_correction(self, alice_sifted:str, qber:float)->str:
-        
         """Error correction involves parity exchange. While we could model this, because there 
         is no error associated, we can just take the outcome of the parity exchange 
         corrections to be Alice's string.

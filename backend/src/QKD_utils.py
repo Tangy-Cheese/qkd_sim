@@ -2,6 +2,11 @@ import math
 import numpy as np
 
 def format_state(state:str)->str:
+    """Format string of qubits into braket strings
+
+    :param state: qubit string
+    :return: bra-ket qubit string 
+    """
     kets = ""
     for i in state:
         kets += f"|{i}> "
@@ -9,6 +14,12 @@ def format_state(state:str)->str:
     return kets
 
 def error_rate(keys:tuple[str,str])->float:
+    """Compute qubit error rate between two keys
+
+    :param keys: Tuple of the two compared keys
+    :raises Exception: Checks if length of keys are the same
+    :return: Qubit error rate
+    """
     a_key = keys[0]
     b_key = keys[1]
     
@@ -24,7 +35,11 @@ def error_rate(keys:tuple[str,str])->float:
     return rate
 
 def binary_entropy(err_rate:float)->float: 
+    """Compute the binary entropy given the error_rate
 
+    :param err_rate: Qubit error rate
+    :return: Binary entropy
+    """
     if err_rate == 0 or err_rate == 1:
         return 0
     
@@ -34,12 +49,23 @@ def binary_entropy(err_rate:float)->float:
     return H
 
 def secure_key_rate(err_rate:float)->float:
-    
+    """Compute the secure key rate from the qubit error rate
+
+    :param err_rate: Qubit error rate
+    :return: Secure key rate
+    """
     return 1 - 2*binary_entropy(err_rate)
 
 
 def XOR(bitstr1:str, bitstr2:str)->str:
-    
+    """XOR operator applied onto two strings.
+    XOR = a ⊕ b
+
+    :param bitstr1: First bit string a
+    :param bitstr2: Second bit string b
+    :raises Exception: If the strings arent the same length XOR cannot be applied
+    :return: XOR of two strings
+    """
     if len(bitstr1) != len(bitstr2):
         raise Exception("Stoopid strings no same length")
    
