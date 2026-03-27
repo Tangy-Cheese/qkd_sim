@@ -5,12 +5,25 @@ import json
 import os
 
 class Participants:
-    
+    """Parent class for participands of BB84 protocol. This class contains 
+    attributes and methods that Alice, Bob and Eve share.
+
+    :param length: Bit length of the sent key
+    """
     def __init__(self, length:int)->None:
+        """Constructor method for Participants
+
+        :param length: Bit length of the sent key
+        """
         self.length = length
 
     def rand_basis(self)->str:
+        """The random bases needed for quantum encoding and measurments. The
+        length of the random bases must be equal to that of the sent bitstring.
 
+        :return: String representation of bases either in the X:|0>, |1> or the 
+            Z:|+>, |->.
+        """
         basis = ""
         bases = ["X", "Z"]
         for _ in range(self.length):
@@ -18,10 +31,18 @@ class Participants:
 
         return basis
 
+
 class Alice(Participants):
-
+    """Alice is a participant of the BB84 protocol. Alice wants a secure key with 
+    the participant Bob. Alice only needs to do two things and that is to generate a 
+    random bitstring of length n, encode her bitstring by encoding each bit with a 
+    random basis. And then sending the quantum states through the quantum channel.
+    """
     def rand_key(self)->str:
+        """Random bitstring generator
 
+        :return: String of random 0s and 1s with some arbitrary length.
+        """
         key = ""
         for _ in range(self.length):
             key += str(random.randint(0, 1))
@@ -29,7 +50,14 @@ class Alice(Participants):
         return key
     
     def quantum_encoding(self, key:str, basis:str)->str:
+        """Encoding of bitstring into qubits
 
+        :param key: The random bitstring (key)
+        :param basis: Random basis for each bit in the bitstring
+        :return: Quantum states either in the Z or X basis represented as a string.
+            Each char represents a qubit where "0" = |0>. A utility function to represent
+            the string of qubits in bra-ket form lies in QKD_utils.py as format_state().
+        """
         quantum_state = ""
 
         for bit,base in zip(key, basis):
@@ -51,20 +79,42 @@ class Alice(Participants):
 
         return quantum_state
 
+
 class Bob(Participants):
+    """Bob is the reciever in BB84. Bob recieves a quantum state from the channel and 
+    measures each bit in some random basis. 
 
+    :param dc_rate: The dark count rate simulates imperfect photon detection from Bob's end. 
+        This value lies between 0,1. The smaller this value the more quantum states Bob can measure.
+    """
     def __init__(self, length:int, dark_count_rate:float)->None:
+        """Constructor method for Bob. Added attribute from Participants class.
 
+        :param length: Length of the sent bitstring
+        :param dark_count_rate: Dark count rate of Bob's detector due to imperfect
+            detection.
+        """
         super().__init__(length)
         self.dc_rate = dark_count_rate
 
     def dark_counts(self)->str:
-        measure = np.random.choice(("0", "1", "_"), p=(self.dc_rate/2, self.dc_rate/2, 1-self.dc_rate))
+        """Essentially, a dark count measures a photon when no detection exists. Since photons in BB84
+        are measured discretely, this means every gap "_" has a chance of being measured as 0 or 1.
 
+        :return: Either an dark count string or gap
+        """
+        measure = np.random.choice(("0", "1", "_"), p=(self.dc_rate/2, self.dc_rate/2, 1-self.dc_rate))
+        
+        #There may be an error here
         return measure
 
     def measurement(self, state:str, basis:str)->str:
+        """Turns the quantum state back into bits through random basis measurements.
 
+        :param state: Qubits recieved from the channel
+        :param basis: Bobs random choices of basis
+        :return: Bitstring of same length. Missing bits are still counted but will be sifted later
+        """
         measured_state = ""
 
         for qubit,base in zip(state,basis):
@@ -94,41 +144,72 @@ class Bob(Participants):
         
         return measured_state
 
+
 class Eve(Participants):
-
+    """Eve is also potentially a member of the BB84 protocol. In this simulation, Eve lies 
+    in the quantum channel.
+    """
     def _eavesdrop(self, state: str)->str:
+        """Private eavesdropping method. Only Eve has this ability where inside the 
+        quantum channel, she measures Alices qubits to gain information and sends 
+        potentially false qubits to Bob.
 
+        :param state: Alices qubits
+        :return: Randomly encoded qubits sent to Bob, pretending to be Alice
+        """
         eve_basis = self.rand_basis()
         eve_measured = Bob(self.length, 0).measurement(state, eve_basis)
 
         return Alice(self.length).quantum_encoding(eve_measured, eve_basis)
 
 class Channel:
-    
-    """
-    Need to add sender reciever in attributes to agree with network.py
-    Not sure how to go about it any other way
+    """This Class represents the object that lies between Alice and Bob. The communication 
+    network channel. 
+
+    :param distance: The distance between two nodes in a connected QKD network. In this case,
+        between Alice and Bob. Measured in Km.
+    :param attenuation: This represents the photon loss due to imperfect fibre optic channels.
+        Depending on the type of the fibre, it affects how many photons are lost through the channel.
+    :param qber: This attribute remains empty but but is a measure of the qubit error rate between
+        the two nodes. This value is stored within this class. Initialised to be empty.
+    :param skr: In the same way as the qubit error rate, the secure key rate is also a measure of
+        channel performance and stored here. Initialised to be empty.
     """
     def __init__(self,  eve: Eve | None, distance:int, fibre_attenuation:float)->None:
-        
+        """Class constructor
+
+        :param eve: Eve either exists or doesnt in a quantum channel. If she does,
+            then more steps within the protocol take place.
+        :param distance: Distance between Alice and Bob in km.
+        :param fibre_attenuation: Loss of photons between Alice and Bob due to fibre
+            attenuation. 
+        """
         if eve:
             self.eve = eve
 
         self.distance = distance #km
         self.attenuation = fibre_attenuation
         
-        """
-        NEW CHANNEL ATTRIBUTES
-        """
         self.qber = []
         self.skr = []
 
-
     def photon_attenuation(self)->float:        
+        """Converting the fibre attenuation constant into a photon survival probability
+
+        :return: Probability of photon survival
+        """
         survival_prob = pow(10,((-self.attenuation * self.distance)/10))
         return survival_prob
 
     def transmit(self, state:str)->str:
+        """Simulating the transmission of qubits inside of the quantum channel. Only up to two processes
+        take place here. Firstly photon loss due to attenuation where a lost photon is marked by the gap 
+        state "_". The second is whether eavesdropping occurs. The processes are ordered such that 
+        eavesdropping always occurs before photon loss although in reality that the process is more continuous.
+
+        :param state: Incoming qubits from Alice 
+        :return: Outgoing qubits to Bob
+        """
         if self.eve:
             state = self.eve._eavesdrop(state)
 
@@ -140,9 +221,24 @@ class Channel:
 
         return channel_state
 
-class BB84:
 
+class BB84:
+    """Class that simulates one BB84 run between two nodes including all the participants and the channel.
+    The main purpose of outputting run results between two nodes.
+
+    :param alice: Alice partiicpant
+    :param bob: Bob participant
+    :param channel: Channel between Alice and Bob
+    :param results: Dictionary holding key results of the run 
+    """
     def __init__(self, alice: Alice, bob: Bob, channel: Channel)->None:
+        """Class constructor
+
+        :param alice: Alice participant
+        :param bob: Bob Participant
+        :param channel: Channel between the two
+        :raises Exception: Errors if the basis, bit, key lengths are not the same
+        """
         self.alice = alice
         self.bob = bob
         self.channel = channel
@@ -153,7 +249,18 @@ class BB84:
         self.results = self.run()
 
     def key_sift(self, key_1:str, key_2:str, basis_1:str, basis_2:str)->tuple[str, str]:
+        """Key sifting process after bob measures his qubits. Alice and Bob publicly compare bases
+        and sift through their keys so the remaining bits correspond to matchin bases.
 
+        :param key_1: Alice's random bitstring
+        :param key_2: Bobs measured bitstring
+        :param basis_1: Alice's random encoding bases
+        :param basis_2: Bob's random measuring bases
+        :raises Exception: Bob and Alices key lengths must be the same or there is an error
+        :return: Bob and Alice should now both have sifted keys. In an ideal world these keys would be
+            identical. However, due to the possibility of Eve and for the sake of measurments, both keys 
+            are stored in a tuple.
+        """
         str_length = len(key_1)
         if str_length != len(key_2):
             raise Exception("Keys need to be the same length when sifted.")
@@ -175,9 +282,8 @@ class BB84:
 
     def error_correction(self, alice_sifted:str, qber:float)->str:
         
-        """
-        Error correction involves parity exchange. While we could model this, because there 
-        is no error associated with this, we can just take the outcome of the parity exchange 
+        """Error correction involves parity exchange. While we could model this, because there 
+        is no error associated, we can just take the outcome of the parity exchange 
         corrections to be Alice's string.
 
         Steps of Error correction simplified:
@@ -191,8 +297,12 @@ class BB84:
         end up with identical strings.
         5. Permuted keys and using different block sizes etc catches all the
         errors and evens any ambiguous parity comparisons.
-        """
-        
+
+
+        :param alice_sifted: Alices sifted keys
+        :param qber: Qubit error rate
+        :return: Bob should have an error corrected key returned
+        """ 
         n = len(alice_sifted)
    
         f_ec = 1.15 #Arbitrary value from chatGPT... Should look a bit more into this
@@ -219,23 +329,29 @@ class BB84:
      #   return private_key 
 
 
-    def run(self)->dict:
-        
-        #Alice generates secret bit key
+    def run(self)->dict: 
+        """The BB84 process is as follows:
+
+        1) Alice Generates a secret bit key
+        2) Alice Encodes her bit key onto quantum states with random bases
+        3) Alice transmits them through the quantum channel
+        4) Bob recieves the quantum states and measures them with random bases
+        5) Alice and bob publically compare bases and sift through matching ones
+        6) Measurments are made to find the qubit error rate and secure key rate
+        7) Bob permutes his key to perform error correction to get an error corrected key
+
+        :return: A dictionary that stores all the results and variables of the simulation
+        """
         secret_key = self.alice.rand_key()
 
-        #Alice encodes her bit key onto quantum states with random Bases
         alice_basis = self.alice.rand_basis()
         alice_state = self.alice.quantum_encoding(secret_key, alice_basis)
 
-        #Alice transmits them through the quantum channel
         alice_state = self.channel.transmit(alice_state)
 
-        #Bob recieves the quantum states and measures them with random bases
         bob_basis = self.bob.rand_basis()
         bob_measurment = self.bob.measurement(alice_state, bob_basis)
 
-        #Alice and bob publically compare bases and sift through matching ones
         sifted_keys: tuple[str, str] = self.key_sift(secret_key, bob_measurment, alice_basis, bob_basis)
         
         #Calculating error rate and key rate from the sifted keys
