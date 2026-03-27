@@ -5,10 +5,6 @@ export default function BB84({ handleReturnClick }) {
     const [loading, setLoading] = useState(false);
     const [controller, setController] = useState(null);
 
-    function handleCancelClick(){
-        setCancelled(True);
-    }
-
     async function simulateProtocol(e) {
         e.preventDefault();
 
@@ -18,7 +14,9 @@ export default function BB84({ handleReturnClick }) {
 
         const payload = {
             protocol: "BB84",
-            length: Number(formData.get("keylen")),
+            key_length: Number(formData.get("keylen")),
+            fibre_length: Number(formData.get("fibrelen")),
+            fibre_attenuation: Number(formData.get("fibreatt")),
             eve: formData.get("eve") !== null,
         };
 
@@ -57,6 +55,14 @@ export default function BB84({ handleReturnClick }) {
                     <input type="number" id="keylen" name="keylen" required />
                 </div>
                 <div id="bb84FormElement">
+                    <label htmlFor="fibrelen">Fibre length (km):</label>
+                    <input type="number" id="fibrelen" name="fibrelen" required />
+                </div>
+                <div id="bb84FormElement">
+                    <label htmlFor="fibreatt">Fibre attenuation (e-3):</label>
+                    <input type="number" id="fibreatt" name="fibreatt" required />
+                </div>
+                <div id="bb84FormElement">
                     <label htmlFor="eve">Include eavesdropper?</label>
                     <input type="checkbox" id="eve" name="eve" />
                 </div>
@@ -71,9 +77,20 @@ export default function BB84({ handleReturnClick }) {
             </form>
 
             {result && (
-                <div>
-                <h2>Simulation Result</h2>
-                <p>Error rate: {result.measurements.error_rate}</p>
+                <div id="results_wrapper">
+                    <h2>Simulation Result</h2>
+                    <div id="results">
+                        <ul>
+                            <li>Key length: {result.key_length}</li>
+                            <li>Fibre length: {result.parameters.distance_km}km</li>
+                            <li>Fibre attenuation: {result.parameters.fibre_attenuation}</li>
+                        </ul>
+                        <ul>
+                            <li>Error rate: {result.measurements.error_rate}</li>
+                            <li>Secure key rate: {result.measurements.secure_key_rate}</li>
+                            <li>Shared key length: {result.measurements.shared_key_length} qubits</li>
+                        </ul>
+                    </div>
                 </div>
             )}
 

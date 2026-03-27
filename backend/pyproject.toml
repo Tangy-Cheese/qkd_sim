@@ -1,20 +1,21 @@
 [project]
 name = "QKDSim"
 version = "0.1.0"
-description = "QKD simulators"
+description = "Network simulator backend of various modelled QKD protocols."
 authors = [
-    { name = "Adam <surname>"},
-    { name = "Pan <surname>"}
+    { name = "Adam" } 
+    { name = "Pan" } 
 ]
 requires-python = ">=3.12"
 readme = "README.md"
-keywords = ["QKD", "Quantum", "Quantum Cryptography"]
+keywords = ["QKD", "Quantum", "Quantum Cryptography", "Networks"]
 dependencies = [
     "numpy>=1.20.0",
     "scipy",
     "matplotlib>=3.5.0",
     "fastapi",
-    "uvicorn"
+    "uvicorn",
+    "networkx"
 ]
 license = { file = "LICENSE" }
 
