@@ -1,4 +1,3 @@
-import math
 import numpy as np
 
 def format_state(state:str)->str:
@@ -79,10 +78,3 @@ def XOR(bitstr1:str, bitstr2:str)->str:
             outcome += "1"
 
     return outcome
-
-
-
-
-
-
-
