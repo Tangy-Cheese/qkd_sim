@@ -16,7 +16,7 @@ class Simulation:
         """
         self.network = network
 
-    def run(self, root:nw.Node, target:nw.Node, key_length:int, dark_count_rate:float)->None:
+    def run(self, root:nw.Node, target:nw.Node, key_length:int, dark_count_rate:float)->dict:
         """How does the simulation run:
 
         1) We use bsf search to find a path of nodes connecting the root to the target
@@ -42,20 +42,26 @@ class Simulation:
         :param key_length: How many bits The first node sends
         :param dark_count_rate: The dark count rate of all of the nodes (WIP As each node may
             have a different dark count rate)
+        :return: security eval including all the main results in the form of a dict 
         """
         path = self.network.bfs_search(root, target) #list of nodes
        
+        path_distance = 0
+        n_secure_nodes = len(path)-2
+
         for i in range(len(path)-1):
             
             sending_node = path[i]
-            recieving_node = path[i+1]
+            receiving_node = path[i+1]
             #consecutive node labelling
 
-            if self.network.graph[sending_node][0] == recieving_node:
+            if self.network.graph[sending_node][0] == receiving_node:
                 #this checks the corresponoding channel for the first two nodes in the list
 
                 link = self.network.graph[path[i]][1] 
                 #if it is then take the next element of that key which is the channel for those two
+                    
+                path_distance += link.distance
 
                 sender = protocols.bb84.Alice(key_length) #model the first node as alice
                 reciever = protocols.bb84.Bob(key_length, dark_count_rate) #model the second as bob
@@ -66,7 +72,7 @@ class Simulation:
 
                 #We add key attributes to the nodes
                 sending_node.key = result["keys"]["corrected_key"]
-                recieving_node.key = result["keys"]["corrected_key"]
+                receiving_node.key = result["keys"]["corrected_key"]
 
                 #ADding attributes to channel now
                 link.qber = result["measurements"]["error_rate"]
@@ -75,32 +81,44 @@ class Simulation:
                 del sender
                 del reciever
                 del net
-    
-    def evaluate_path_security(self, root:str, target:str)->dict:
-        """Method calculating overall path securities (WIP)
+           
+        #comparing key rates
 
-        :param root: Starting node
-        :param target: Target node
-        :return: Security results in a dictionary
-        """
+        sim_skr = 0
+        sim_qber = 0
+
+        for i in range(len(self.network.links)-1):
+            if self.network.links[i].channel.qber < self.network.links[i+1].channel.qber:  
+                sim_skr = self.network.links[i].channel.qber
+                sim_qber = self.network.links[i].channel.skr
+
+        #comparing keys
+        for i in range(len(self.network.nodes) - 1):
+                pass 
+
+
         results = {
             "root" : root,
             "target" : target,
 
             "network":{
-                "distance": ....,
-                "number_of_secure_nodes": ...,
+                "distance":path_distance,
+                "number_of_secure_nodes":n_secure_nodes,
             },
 
-            outcomes:
+            "security":{
+                "secure_key_rate":sim_skr,
+                "qubit_error_rate":sim_qber
+            },
 
-
-
-
+            "keys":{
+                f"{root.identity} key":"abc", 
+                f"{target.identity} key":"cde"
+            }
         }
 
-
         return results
+
 
 if __name__ == "__main__":
     
@@ -123,7 +141,3 @@ if __name__ == "__main__":
     sim = Simulation(network)
 
     sim.run(Adam, Kyle, 1000000, 0.01)
-
-
-
-    
