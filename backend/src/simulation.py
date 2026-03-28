@@ -4,14 +4,44 @@ from QKD_utils import XOR
 
 
 class Simulation:
-
+    """The mains simulation class which runs the whole network along with the QKD protocols.
+    (WILL ADD MULTIPROTOCOL LAYERS LATER)
+    
+    :param network: Network which is simulating (Assumed to be just BB84)
+    """
     def __init__(self, network:nw.Network)->None:
+        """Simulation class constructor
 
+        :param network: Network that the simulation will be run on
+        """
         self.network = network
 
     def run(self, root:nw.Node, target:nw.Node, key_length:int, dark_count_rate:float)->None:
-        """
-        dark_count rate needs to be modified as each node dark count rate can be different. !!!!!
+        """How does the simulation run:
+
+        1) We use bsf search to find a path of nodes connecting the root to the target
+        2) For every node in the other than the last, the node is sending a key and the 
+        next node is receiving a key.
+        3) We check in the adjacency list the keys where for the sending node, if the first element 
+        is the recieving node, then the channel between them is the correct quantum channel object to use.
+        4) We then set the link between the two nodes to be the channel.
+        5) Construct a temporary Alice and Bob relationship for the sending and recieving node.
+        6) Create a BB84 protocol object using all the constituents and run it. Storing the result as a 
+        dictionary. Note run() in this step is polymorphic applying to the bb84 class.
+        7) From the result gather the keys and set them as attrubutes of their relevant node class. Likewise,
+        storing qber and skr in the link channels. 
+        (WIP WILL IMPLEMENT SENT KEY AND RECIEVED KEY ATTRIBUTES IN NODES SINCE THEY STORE MULTIPLE)
+        8) Destruct the temporary classes for memory efficiency.
+
+        Note the purpose of running this is to fill in the missing attributes for the node and linke classes
+        in networks. All the data needed to perform calculations and analyses.
+
+
+        :param root: Starting node
+        :param target: Ending node
+        :param key_length: How many bits The first node sends
+        :param dark_count_rate: The dark count rate of all of the nodes (WIP As each node may
+            have a different dark count rate)
         """
         path = self.network.bfs_search(root, target) #list of nodes
        
@@ -34,12 +64,6 @@ class Simulation:
                 #simulate the two nodes with bb84 and retrive the results
                 result = net.run() #dict form 
 
-                """
-                NOTE: nodes have attributs SKR, QBER
-                might refactor to have these as hidden attributes in Channel class instead.
-More importantly, the Nodes have attributes key, which is very important.
-                """
-                
                 #We add key attributes to the nodes
                 sending_node.key = result["keys"]["corrected_key"]
                 recieving_node.key = result["keys"]["corrected_key"]
@@ -50,11 +74,15 @@ More importantly, the Nodes have attributes key, which is very important.
                 
                 del sender
                 del reciever
+                del net
     
     def evaluate_path_security(self, root:str, target:str)->dict:
-       
-        
+        """Method calculating overall path securities (WIP)
 
+        :param root: Starting node
+        :param target: Target node
+        :return: Security results in a dictionary
+        """
         results = {
             "root" : root,
             "target" : target,
