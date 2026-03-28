@@ -2,7 +2,7 @@
 
 QKD project
 
-## Development Setup (us two)
+## Development Setup 
 
 ### Clone the repository
 

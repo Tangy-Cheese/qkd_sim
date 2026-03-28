@@ -3,6 +3,7 @@ from protocols.bb84 import Channel, Eve
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 class Node:
     """Each node represents Alice and/or Bob in a networked system
 
@@ -18,45 +19,43 @@ class Node:
         self.identity = identity
         self.key = []
 
+
 class Edge:
     """In a graph, each edge represents a link between two nodes. Or in the instance of Quantum Key
     Distribution, the presence of a quantum channel.
 
-    :param node_1: A node which can either send or recieve
-    :param node_2: A second node which can either send or recieve
+    :param node_1: A node which can either send or receive
+    :param node_2: A second node which can either send or receive
     :param channel: The quantum channel which links the two nodes, characterised by the channel class 
         from protocols/bb84.py
     """
     def __init__(self, node_1: Node, node_2:Node, distance:int, attenuation:float, eve: Eve | None)->None:
         """Edge class constructor
 
-        :param node_1: 
-        :param node_2: 
-        :param distance: 
-        :param attenuation: 
-        :param eve: 
+        :param node_1: A node which can either send or receive
+        :param node_2: A second node which can either send or receive
+        :param distance: Physical distance between the two nodes in Km
+        :param attenuation: Optical fibe attenuation constant 
+        :param eve: Whethere there exists an Eavesdropper or not in the channel
         """
         self.node_1 = node_1
         self.node_2 = node_2 
         
         self.channel = Channel(eve, distance, attenuation) 
- 
-class Network:
-    """
 
-    :param nodes: 
-    :param links: 
-    :param graph: 
-    """
-    """
-    Edge: Channel 
-    Weight: Channel object containing QBER, key rate, photon loss
+
+class Network:
+    """The network class forms the main underlying object for the connections between all the nodes.
+
+    :param nodes: A list of all of the participating nodes in the network
+    :param links: A list of all the links connecting nodes
+    :param graph: Store of the Adjacency list that connects all the nodes and edges
     """
     def __init__(self, nodes:list[Node], links:list[Edge])->None:
-        """
+        """Network constructor 
 
-        :param nodes: 
-        :param links: 
+        :param nodes: List of participating nodes
+        :param links: List of all the links between the nodes
         """
         self.nodes = nodes
         self.links = links 
@@ -64,7 +63,8 @@ class Network:
         self.adj_list()
 
     def adj_list(self)->None:
-        """
+        """This function fills in the adjacency list attribute of the network class. The adjacency list is created
+        from the relation shipe between each node to every other node it is connected to.
         """
         for node in self.nodes:
             
@@ -81,9 +81,9 @@ class Network:
             self.graph[b].append((a, edge))
         
     def matrixify_list(self)->np.ndarray:
-        """
+        """Method that churns out the adjacency matrix. May be useful for calculations further down the line.
 
-        :return: 
+        :return: Numpy array storing the adjacency matrix
         """
         adj_mat = np.zeros((len(self.nodes), len(self.nodes)), dtype=Channel)
         
@@ -99,15 +99,15 @@ class Network:
         return adj_mat
 
     def __add__(self, other:"Network")->"Network":
-        
-        """
-        Add multiple networks by increasing the list of nodes
+        """Add multiple networks by increasing the list of nodes
         Adding a list of edge relationships to the existing list
 
         Any of the adj matrices, lists whatever is preserved in this new network objects via the methods
         adj_list(), matrixify_list()
-        """
 
+        :param other: Other is another network object. 
+        :return: Network class which is the combined two networks
+        """
         #for the case of duplicate nodes, we remove duplicates
         node_map = {}
     
@@ -117,8 +117,9 @@ class Network:
         new_nodes = list(node_map.values())
        
         """
-        Links is more complicated, since we want to minimise the photon loss, qber etc.
-        I think a viable approach would be to calculate using `BB84`sim the better line (since remember its not just distance based but attenuation based too) and choose that.
+        Links are more complicated, since we want to minimise the photon loss, qber etc.
+        I think a viable approach would be to calculate using `BB84`sim the better line
+        (since remember its not just distance based but attenuation based too) and choose that.
 
         For now lets assume that the other network wont have an edge with the same nodes.
         But this needs to be changed.
@@ -130,7 +131,7 @@ class Network:
         return Network(new_nodes, new_links)
 
     def visualise(self)->None:
-        """
+        """Method to visualise networks of the network class using NetworkX package.
         """
         G = nx.Graph() 
         
@@ -158,8 +159,12 @@ class Network:
         plt.show()
         
     def bfs_search(self, root:Node, target:Node)->list[Node]:
-        """
-        To find the shortest path between two nodes in terms of no. edges
+        """Finding the shortest path between two nodes in terms of edges. Does this via breadth 
+        search first where the closest layer of nodes are all searched first. 
+
+        :param root: The starting node of the search
+        :param target: The final node of the search
+        :return: A list of nodes connecting the starting node to the ending node
         """
         queue = [root] #Start off w root search
         visited = set() 
@@ -173,7 +178,8 @@ class Network:
             if curr == target: #Stop the search at destination
                 break
 
-            for next in self.graph[curr]: #each key of the graph is in the form of a tuple where the first el is the neighbour node.
+            for next in self.graph[curr]: 
+                #each key of the graph is in the form of a tuple where the first el is the neighbour node.
               
                 neighbour = next[0]
                 
@@ -181,7 +187,9 @@ class Network:
                    
                     visited.add(neighbour) # Exists so that the loop doesnt go on forever
                     parent[neighbour] = curr
-                    queue.append(neighbour) #The queue will as a result order the 1depth nodes to be searched first as all neighbours of curr need to be visited before moving on.
+                    queue.append(neighbour) 
+                    #The queue will as a result order the 1 depth nodes to be 
+                    #searched first as all neighbours of curr need to be visited before moving on.
 
         if target not in visited: #In the case that the target is disconnected from the network.
             return []
@@ -197,15 +205,17 @@ class Network:
         return path 
 
 class NetAlgorithms:
-    """
+    """Algorithms applied to the network (WIP)
 
-    :param network: 
+    :param network: The said network
     """
     def __init__(self, network: Network)->None:
         
         self.network = network 
         
     def dijkstra(self,):
+        """
+        """
         #since we wanna maximise the skr, we need to minimise the qber, so we m
         pass
 

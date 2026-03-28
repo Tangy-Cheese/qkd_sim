@@ -335,7 +335,7 @@ class BB84:
         2) Alice Encodes her bit key onto quantum states with random bases
         3) Alice transmits them through the quantum channel
         4) Bob recieves the quantum states and measures them with random bases
-        5) Alice and bob publically compare bases and sift through matching ones
+        5) Alice and bob publicly compare bases and sift through matching ones
         6) Measurments are made to find the qubit error rate and secure key rate
         7) Bob permutes his key to perform error correction to get an error corrected key
 

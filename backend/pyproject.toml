@@ -3,7 +3,7 @@ name = "QKDSim"
 version = "0.1.0"
 description = "Network simulator backend of various modelled QKD protocols."
 authors = [
-    { name = "Adam" } 
+    { name = "Adam" },
     { name = "Pan" } 
 ]
 requires-python = ">=3.12"
