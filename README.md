@@ -1,79 +1,69 @@
-# QKD
+# Quantum Communication Networks
 
-QKD project
+Website which displays how various quantum communication protocols can interact.
 
-## Development Setup 
-
-### Clone the repository
+## Development Setup
 
 ```bash
 git clone https://github.com/Tangy-Cheese/QKD.git
 cd QKD/
-```
 
-### Install in editable mode (with test dependencies)
+# Create a python virtual environment
+python -m venv .venv
 
-```bash
+# MacOS/Linux
+source /.venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
+
+# Intall package dependencies
 pip install -e .[test]
 ```
 
-### To run tests
+`-e` installs in editable mode, linking to `src/` so source changes reflect immediately. `.[test]` pulls project dependencies plus pytest.
+
+### Tests
 
 ```bash
 pytest
 ```
 
-Obv we will change these instructions later for users. But ``-e``means pip installation in editor mode,
-so it will link to src/ directory in this project. So any updates we make to the source code automatically links.
-The ``.[test]`` imports all the project dependencies from pyproject.toml and also the ``[test]`` dependencies for now which
-is just pytest. Also there will be a tonne of artefacts from pip installing. Honestly not sure why or what a lot of them do
-but just ignore all of them, they are all in the **.gitignore** so they wont be tracked by git anyway.
-
 ## Backend (FastAPI)
 
-### To run the Backend Server
-
-From the project root:
-
-Install fastapi and uvicorn first on your venv or wherever:
+### Requirements
 
 ```bash
 pip install fastapi uvicorn
 ```
 
-then
+### Running
+
+From project root:
 
 ```bash
 cd backend
-uvicorn main:app --reload #uvicorn server host takes place at localhost:8000
+uvicorn main:app --reload
 ```
 
-the backend server is running if you see:
+Server is up when you see `uvicorn running on http://127.0.0.1:8000`.
 
-```bash
-uvicorn running on http://127.0.0.1:8000
-```
-
-To interact with fastapi documentation and feed json data manually to see if it works enter this link:
-
-```bash
-http://localhost:8000/docs
-```
+Interactive API docs: `http://localhost:8000/docs`
 
 > [!IMPORTANT]
-> To close the server, DON'T close the terminal. Had to spend ages fixing it when trying to rerun the server.
-> In the same terminal, exit using `ctrl + C`!
+> To stop the server, use `Ctrl + C` in the same terminal. Do not close the terminal window.
 
 ## Frontend (React)
 
-## Requirements
+### Requirements
+
 - Node.js >= 22
 - npm (or pnpm / yarn)
 
-### Running the Frontend Page
+### Running
 
 ```bash
 cd frontend
-npm ci #reads package-lock.json instead of 
+npm ci
 npm run dev
 ```
