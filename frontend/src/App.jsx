@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import TitleScreen from './components/TitleScreen.jsx'
 import BB84 from './components/bb84.jsx'
 import E91 from './components/e91.jsx'
+import NetworkMap from './components/networkmap.jsx'
 import { getDefaultNetwork } from './api.js'
 import './App.css'
 
@@ -9,6 +10,7 @@ const PAGES = [
   { hash: "", label: "Home" },
   { hash: "bb84", label: "BB84" },
   { hash: "e91", label: "E91" },
+  { hash: "network", label: "Network" },
 ]
 
 const STATUS_POLL_MS = 5000
@@ -70,7 +72,7 @@ function App() {
         <div className="marquee">
           <span>
             *** WELCOME TO QKDSIM *** Simulate unbreakable quantum cryptography from the comfort of your own
-            modem *** BB84 now ONLINE *** E91 coming soon *** Eve is watching... or is she?? ***
+            modem *** BB84 now ONLINE *** NEW: multi node NETWORK simulation *** E91 coming soon *** Eve is watching... or is she?? ***
           </span>
         </div>
       </div>
@@ -104,7 +106,9 @@ function App() {
             <BB84 /> :
             currentPage === "e91" ?
               <E91 /> :
-              <TitleScreen />
+              currentPage === "network" ?
+                <NetworkMap /> :
+                <TitleScreen />
           }
         </div>
       </div>

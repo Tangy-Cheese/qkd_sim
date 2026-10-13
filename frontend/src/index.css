@@ -164,6 +164,7 @@ tt, pre {
 
 .window-body {
     padding: 10px 12px 12px;
+    overflow-x: auto;
 }
 
 .window a {
@@ -256,4 +257,8 @@ table.data th {
 
 table.data td {
     background-color: #ffffff;
+}
+
+table.data.compact th, table.data.compact td {
+    padding: 2px 3px;
 }

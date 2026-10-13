@@ -33,6 +33,13 @@ export default function TitleScreen(){
                     Entanglement based key distribution. Still being built!
                 </li>
             </ul>
+            <p>Or wire up a whole network of nodes:</p>
+            <ul className="links">
+                <li>
+                    <a href="#network">Network Simulation</a> <span className="new blink">NEW!</span><br />
+                    Trusted node key relay over the lowest loss route.
+                </li>
+            </ul>
             <hr />
             <div className="construction" />
             <p className="centre">

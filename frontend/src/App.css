@@ -184,3 +184,80 @@ ul.links li {
 .key {
     word-break: break-all;
 }
+
+/* --- network page --- */
+
+.netmap {
+    display: block;
+    width: 100%;
+    border: 2px inset #c0c0c0;
+    /* green grid on black, like a radar screen */
+    background-color: #000000;
+    background-image:
+        linear-gradient(#003300 1px, transparent 1px),
+        linear-gradient(90deg, #003300 1px, transparent 1px);
+    background-size: 20px 20px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+
+.netmap text {
+    fill: #00ff00;
+    text-anchor: middle;
+}
+
+.netmap .edge path {
+    fill: none;
+    stroke: #008800;
+    stroke-width: 2;
+}
+
+.netmap .edge.used path {
+    stroke: #ffff00;
+    stroke-width: 3;
+    stroke-dasharray: 8 6;
+    animation: flow 0.8s linear infinite;
+}
+
+.netmap .edge.eve path {
+    stroke: #ff0000;
+}
+
+.netmap .edge.eve text {
+    fill: #ff5555;
+}
+
+.netmap .edge .qber {
+    fill: #ffff00;
+}
+
+@keyframes flow {
+    to {
+        stroke-dashoffset: -14;
+    }
+}
+
+.netmap .node rect {
+    fill: #c0c0c0;
+    stroke: #ffffff;
+    stroke-width: 2;
+}
+
+.netmap .node.endpoint rect {
+    fill: #ff00ff;
+}
+
+.netmap .node .role {
+    fill: #000000;
+    font-weight: bold;
+}
+
+.notice {
+    color: #ffaa00;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+input.narrow {
+    width: 62px;
+}
