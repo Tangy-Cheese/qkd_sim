@@ -131,6 +131,8 @@ export default function BB84() {
                     </table>
                 </Window>
             )}
+
+            <p className="centre"><a href="#">Back to main page</a></p>
         </>
     );
 }
