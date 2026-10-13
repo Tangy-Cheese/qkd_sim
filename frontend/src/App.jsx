@@ -24,7 +24,7 @@ function App() {
       {currentPage == "TitleScreen" ? 
         <TitleScreen handleBB84Click={() => handleBB84Click()} handleE91Click={() => handleE91Click()}/> : 
         currentPage == "bb84" ?
-          <BB84 handleReturnClick={() => handleReturnClick()} /> :
+          <><BB84 /><button onClick={handleReturnClick}>Back to main page</button></> :
           <E91 handleReturnClick={() => handleReturnClick()}/>
       }
     </div>

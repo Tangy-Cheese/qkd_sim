@@ -18,7 +18,7 @@ DARK_COUNT_RATE = 1e-3
 # It will make more sense afterwards this is what allows javascript and python to interact I believe
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # only allow requests from this url
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # only allow requests from these urls
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
