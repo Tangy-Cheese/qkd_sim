@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from QKD_utils import error_rate, secure_key_rate, binary_entropy
+from QKD_utils import error_rate, secure_key_rate, secret_fraction, binary_entropy
 import json
 import os
 
@@ -21,8 +21,8 @@ class Participants:
         """The random bases needed for quantum encoding and measurments. The
         length of the random bases must be equal to that of the sent bitstring.
 
-        :return: String representation of bases either in the X:|0>, |1> or the 
-            Z:|+>, |->.
+        :return: String representation of bases either in the Z:|0>, |1> or the 
+            X:|+>, |->.
         """
         basis = ""
         bases = ["X", "Z"]
@@ -197,8 +197,15 @@ class Channel:
 
         :return: Probability of photon survival
         """
-        survival_prob = pow(10,((-self.attenuation * self.distance)/10))
+        survival_prob = pow(10,(-self.loss()/10))
         return survival_prob
+
+    def loss(self)->float:
+        """Total loss of the channel, which is what decides how good a link is.
+
+        :return: Channel loss in dB
+        """
+        return self.attenuation * self.distance
 
     def transmit(self, state:str)->str:
         """Simulating the transmission of qubits inside of the quantum channel. Only up to two processes
@@ -228,7 +235,8 @@ class BB84:
     :param alice: Alice partiicpant
     :param bob: Bob participant
     :param channel: Channel between Alice and Bob
-    :param results: Dictionary holding key results of the run 
+    :param f_ec: Error correction efficiency. How many more bits are leaked compared
+        to the ideal Shannon limit.
     """
     def __init__(self, alice: Alice, bob: Bob, channel: Channel)->None:
         """Class constructor
@@ -244,8 +252,8 @@ class BB84:
 
         if bob.length != alice.length:
             raise Exception("Bob's basis needs to be the same length as Alice's key.")
-       
-        self.results = self.run()
+
+        self.f_ec = 1.15 #Arbitrary value from chatGPT... Should look a bit more into this
 
     def key_sift(self, key_1:str, key_2:str, basis_1:str, basis_2:str)->tuple[str, str]:
         """Key sifting process after bob measures his qubits. Alice and Bob publicly compare bases
@@ -302,12 +310,10 @@ class BB84:
         :return: Bob should have an error corrected key returned
         """ 
         n = len(alice_sifted)
-   
-        f_ec = 1.15 #Arbitrary value from chatGPT... Should look a bit more into this
 
         # fraction of bits leaked during EC
-        leak_fraction = f_ec * binary_entropy(qber)
-        corrected_length = int(n * (1 - leak_fraction))
+        leak_fraction = self.f_ec * binary_entropy(qber)
+        corrected_length = max(0, int(n * (1 - leak_fraction))) #nothing left if leakage exceeds the key
        
         #Random permuation of Alice's sifted key
         arr = np.array(list(alice_sifted))
@@ -319,12 +325,23 @@ class BB84:
 
         return corrected_key
 
-    #def privacy_amplification(self, key:str)->str:
-        
-        
-        
-      #  private_key = ""
-     #   return private_key 
+    def privacy_amplification(self, key:str, sifted_length:int, qber:float)->str:
+        """Privacy amplification removes whatever Eve could have learnt about the key. In reality
+        the key is hashed down to a shorter one. Like error correction, the hashing itself is not 
+        modelled so the key is just shortened to the length the hash would output.
+
+        Eve's information is bounded by the binary entropy of the qubit error rate, so 
+        on top of the bits leaked by error correction, a further H(Q) of the sifted key is removed.
+
+        :param key: Error corrected key
+        :param sifted_length: Length of the sifted key before error correction
+        :param qber: Qubit error rate
+        :return: The final secure key
+        """
+        secure_length = int(sifted_length * secret_fraction(qber, self.f_ec))
+        private_key = key[:secure_length]
+
+        return private_key
 
 
     def run(self)->dict: 
@@ -336,7 +353,9 @@ class BB84:
         4) Bob recieves the quantum states and measures them with random bases
         5) Alice and bob publicly compare bases and sift through matching ones
         6) Measurments are made to find the qubit error rate and secure key rate
-        7) Bob permutes his key to perform error correction to get an error corrected key
+        7) If the error rate is too high for any secure key to be left, the run is aborted
+        8) Bob permutes his key to perform error correction to get an error corrected key
+        9) Privacy amplification shortens the corrected key into the final secure key
 
         :return: A dictionary that stores all the results and variables of the simulation
         """
@@ -354,11 +373,19 @@ class BB84:
         
         #Calculating error rate and key rate from the sifted keys
         err_r8 = error_rate(sifted_keys)
-        secure_key_r8 = secure_key_rate(err_r8)
-        
-        corrected_key = self.error_correction(sifted_keys[0], err_r8)
+        sift_ratio = len(sifted_keys[0])/len(secret_key) if len(secret_key) > 0 else 0.0
+        secure_key_r8 = secure_key_rate(err_r8, sift_ratio, self.f_ec)
 
-       # secure_key = self.privacy_amplification(corrected_key)
+        #No secure key can be made, either nothing arrived or Eve knows too much. So no keys are handed out
+        aborted = secure_key_r8 == 0
+
+        if aborted:
+            corrected_key = ""
+            secure_key = ""
+
+        else:
+            corrected_key = self.error_correction(sifted_keys[0], err_r8)
+            secure_key = self.privacy_amplification(corrected_key, len(sifted_keys[0]), err_r8)
 
         #Python dict results
         results = {"key_length":len(secret_key),
@@ -369,7 +396,7 @@ class BB84:
 
                    "corrected_key":corrected_key,
                    
- #                  "secure_key":secure_key
+                   "secure_key":secure_key
                 },
 
                 "parameters":{
@@ -380,9 +407,12 @@ class BB84:
 
                 "measurements":{
                     "shared_key_length":len(sifted_keys[0]),
+                    "secure_key_length":len(secure_key),
                     "error_rate":err_r8,
                     "secure_key_rate": secure_key_r8
                 },
+
+                "aborted":aborted,
 
                 "protocol":"BB84"    
         }   

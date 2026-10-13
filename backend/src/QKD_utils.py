@@ -47,13 +47,33 @@ def binary_entropy(err_rate:float)->float:
 
     return H
 
-def secure_key_rate(err_rate:float)->float:
-    """Compute the secure key rate from the qubit error rate
+def secret_fraction(err_rate:float, f_ec:float=1.15)->float:
+    """Compute the fraction of the sifted key that survives error correction and 
+    privacy amplification. Error correction leaks f_ec*H(Q) and privacy amplification
+    removes a further H(Q).
 
     :param err_rate: Qubit error rate
-    :return: Secure key rate
+    :param f_ec: Error correction efficiency, 1 being the ideal Shannon limit
+    :return: Secret fraction, 0 when the error rate is too high to extract any key
     """
-    return 1 - 2*binary_entropy(err_rate)
+    #binary entropy is symmetric around 0.5 but a key that is wrong more often than not is useless
+    if err_rate >= 0.5:
+        return 0.0
+
+    H = binary_entropy(err_rate)
+
+    return max(0.0, float(1 - f_ec*H - H))
+
+def secure_key_rate(err_rate:float, sift_ratio:float=1.0, f_ec:float=1.15)->float:
+    """Compute the secure key rate from the qubit error rate. This is measured in secure 
+    bits per sent qubit, so photon loss and sifting both lower the rate.
+
+    :param err_rate: Qubit error rate
+    :param sift_ratio: Length of the sifted key divided by the number of sent qubits
+    :param f_ec: Error correction efficiency, 1 being the ideal Shannon limit
+    :return: Secure key rate, 0 when the error rate is too high to extract any key
+    """
+    return sift_ratio * secret_fraction(err_rate, f_ec)
 
 
 def XOR(bitstr1:str, bitstr2:str)->str:

@@ -1,4 +1,5 @@
 import numpy as np
+import heapq
 from protocols.bb84 import Channel, Eve
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -9,7 +10,12 @@ class Node:
 
     :param identity: The identity is just characterised as a name of string form
     :param key: Each node has an attribute that is empty initially. But this stores the 
-        keys that result from the run that the network class enforces.
+        final key shared between the root and the target that results from the run that 
+        the network class enforces.
+    :param sent_key: The key this node shares with the next node in the path, where this 
+        node was the sender. Empty initially.
+    :param received_key: The key this node shares with the previous node in the path, where 
+        this node was the receiver. Empty initially.
     """
     def __init__(self, identity:str)->None:
         """Class constructor for each node 
@@ -17,7 +23,9 @@ class Node:
         :param identity: String of name
         """
         self.identity = identity
-        self.key = []
+        self.key = ""
+        self.sent_key = ""
+        self.received_key = ""
 
 
 class Edge:
@@ -87,7 +95,7 @@ class Network:
         """
         adj_mat = np.zeros((len(self.nodes), len(self.nodes)), dtype=Channel)
         
-        node_to_idx = {}
+        node_to_idx = {node: idx for idx, node in enumerate(self.nodes)}
 
         for link in self.links:
 
@@ -118,15 +126,30 @@ class Network:
        
         """
         Links are more complicated, since we want to minimise the photon loss, qber etc.
-        I think a viable approach would be to calculate using `BB84`sim the better line
-        (since remember its not just distance based but attenuation based too) and choose that.
-
-        For now lets assume that the other network wont have an edge with the same nodes.
-        But this needs to be changed.
+        When both networks have an edge with the same nodes, the better line is chosen. The better 
+        line is the one with the lower total loss (since remember its not just distance based 
+        but attenuation based too).
         """
+        best_links = {}
+
+        for link in self.links + other.links:
+
+            pair = frozenset((link.node_1.identity, link.node_2.identity))
+
+            if pair not in best_links or link.channel.loss() < best_links[pair].channel.loss():
+                best_links[pair] = link
+
+        #Links are rebuilt so that they point to the nodes that survived the duplicate removal
         new_links = []
-        new_links.extend(self.links)
-        new_links.extend(other.links)
+
+        for link in best_links.values():
+
+            a = node_map[link.node_1.identity]
+            b = node_map[link.node_2.identity]
+
+            edge = link.channel
+
+            new_links.append(Edge(a, b, edge.distance, edge.attenuation, edge.eve))
          
         return Network(new_nodes, new_links)
 
@@ -213,11 +236,64 @@ class NetAlgorithms:
         
         self.network = network 
         
-    def dijkstra(self,):
+    def dijkstra(self, root:Node, target:Node)->list[Node]:
+        """Finding the best path between two nodes for key distribution using Dijkstra's algorithm.
+        Every link in the path makes its own key, so the secure key rate of the whole path is only 
+        as good as its worst link. The best path is therefore the one whose worst link has the 
+        lowest loss. Between paths with an equally bad worst link, the lower total loss is preferred.
+
+        :param root: The starting node of the search
+        :param target: The final node of the search
+        :return: A list of nodes connecting the starting node to the ending node
         """
-        """
-        #since we wanna maximise the skr, we need to minimise the qber, so we m
-        pass
+        #since we wanna maximise the skr, we need to minimise the qber, so we minimise the loss
+        best = {root: (0, 0)} #cost of reaching each node as (worst link loss, total loss)
+        parent = {}
+        visited = set()
+
+        count = 0 #Exists so that the heap never has to compare two nodes on a tie
+        heap = [(0, 0, count, root)]
+
+        while heap:
+
+            worst, total, _, curr = heapq.heappop(heap) #cheapest node that has not been visited
+
+            if curr in visited:
+                continue
+
+            visited.add(curr)
+
+            if curr == target: #Stop the search at destination
+                break
+
+            for neighbour, channel in self.network.graph[curr]:
+
+                if neighbour in visited:
+                    continue
+
+                loss = channel.loss()
+                cost = (max(worst, loss), total + loss)
+
+                if neighbour not in best or cost < best[neighbour]:
+
+                    best[neighbour] = cost
+                    parent[neighbour] = curr
+
+                    count += 1
+                    heapq.heappush(heap, (cost[0], cost[1], count, neighbour))
+
+        if target not in visited: #In the case that the target is disconnected from the network.
+            return []
+
+        #last node
+        path = [target]
+
+        while path[-1] != root: # Keep walking backwards to build the path.
+            path.append(parent[path[-1]])
+
+        path.reverse()
+
+        return path
 
 
 if __name__ == "__main__":
