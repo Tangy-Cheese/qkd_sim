@@ -1,60 +1,264 @@
+/* ~*~ QKDSim, best viewed at 800x600 ~*~ */
+
 body {
+    margin: 0;
+    padding: 12px 0 40px;
+    color: #ffff66;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 17px;
+    /* tiled starfield */
+    background-color: #000018;
+    background-image:
+        radial-gradient(1px 1px at 20px 30px, #ffffff, transparent),
+        radial-gradient(1px 1px at 90px 110px, #ffffff, transparent),
+        radial-gradient(2px 2px at 150px 60px, #aaccff, transparent),
+        radial-gradient(1px 1px at 60px 170px, #ffffcc, transparent),
+        radial-gradient(1px 1px at 180px 190px, #ffffff, transparent),
+        radial-gradient(2px 2px at 120px 20px, #ffccff, transparent);
+    background-size: 200px 200px;
+}
+
+h1, h2, h3 {
+    font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+    text-align: center;
+    margin: 0.4em 0;
+}
+
+h1 {
+    font-size: 34px;
+    text-shadow: 3px 3px 0 #ff00ff;
+}
+
+h2 {
+    color: #00ffff;
+    text-shadow: 2px 2px 0 #0000aa;
+}
+
+a {
+    color: #00ffff;
+}
+
+a:visited {
+    color: #ff66ff;
+}
+
+a:hover {
+    color: #ffffff;
+    background-color: #0000ff;
+}
+
+hr {
+    border: 0;
+    height: 4px;
+    margin: 14px 0;
+    background: linear-gradient(90deg, #ff0000, #ff9900, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+}
+
+tt, pre {
+    font-family: "Courier New", Courier, monospace;
+}
+
+/* --- text effects --- */
+
+.blink {
+    animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+.rainbow {
+    color: #ff0000;
+    animation: rainbow 4s linear infinite;
+}
+
+@keyframes rainbow {
+    0% { color: #ff3333; }
+    17% { color: #ffaa00; }
+    33% { color: #ffff00; }
+    50% { color: #33ff33; }
+    67% { color: #00ffff; }
+    83% { color: #ff66ff; }
+    100% { color: #ff3333; }
+}
+
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: #000080;
+    border: 2px inset #c0c0c0;
+    color: #00ff00;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    padding: 3px 0;
+}
+
+.marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 22s linear infinite;
+}
+
+@keyframes marquee {
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.new {
+    color: #ff0000;
+    background-color: #ffff00;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 0 3px;
+}
+
+/* yellow and black hazard tape */
+.construction {
+    height: 18px;
+    border: 2px solid #000000;
+    background: repeating-linear-gradient(45deg, #ffcc00 0 14px, #000000 14px 28px);
+}
+
+/* --- grey windows, buttons and inputs --- */
+
+.window {
+    background-color: #c0c0c0;
+    color: #000000;
+    border: 2px solid;
+    border-color: #ffffff #404040 #404040 #ffffff;
+    box-shadow: 4px 4px 0 #000000;
+    margin: 16px 0;
+    font-family: "MS Sans Serif", Tahoma, Geneva, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.window-title {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    background-color: #000080;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 3px 4px 3px 6px;
+    margin: 2px;
 }
 
-p, h1, h2, h3, li, button, label {
-    font-family: 'Courier New', Courier, monospace;
+.window-buttons b {
+    display: inline-block;
+    width: 16px;
+    height: 14px;
+    line-height: 12px;
+    margin-left: 2px;
+    text-align: center;
+    font-size: 11px;
+    color: #000000;
+    background-color: #c0c0c0;
+    border: 1px solid;
+    border-color: #ffffff #404040 #404040 #ffffff;
 }
 
-/* Some nice button CSS taken from online */
+.window-body {
+    padding: 10px 12px 12px;
+    overflow-x: auto;
+}
+
+.window a {
+    color: #0000ee;
+}
+
+.window a:visited {
+    color: #551a8b;
+}
+
+.window h3 {
+    font-family: inherit;
+    text-align: left;
+    font-size: 14px;
+    margin: 12px 0 6px;
+}
+
 button {
-  appearance: none;
-  background-color: #2ea44f;
-  border: 1px solid rgba(27, 31, 35, .15);
-  border-radius: 6px;
-  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  padding: 6px 16px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
+    font-family: "MS Sans Serif", Tahoma, Geneva, Arial, sans-serif;
+    font-size: 14px;
+    color: #000000;
+    background-color: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #404040 #404040 #ffffff;
+    padding: 4px 14px;
+    cursor: pointer;
 }
 
-button:focus:not(:focus-visible):not(.focus-visible) {
-  box-shadow: none;
-  outline: none;
+button:active:not(:disabled) {
+    border-color: #404040 #ffffff #ffffff #404040;
+    padding: 5px 13px 3px 15px;
 }
 
-button:hover {
-  background-color: #2c974b;
-}
-
-button:focus {
-  box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
-  outline: none;
+button:focus-visible {
+    outline: 1px dotted #000000;
+    outline-offset: -5px;
 }
 
 button:disabled {
-  background-color: #94d3a2;
-  border-color: rgba(27, 31, 35, .1);
-  color: rgba(255, 255, 255, .8);
-  cursor: default;
+    color: #808080;
+    text-shadow: 1px 1px 0 #ffffff;
+    cursor: default;
 }
 
-button:active {
-  background-color: #298e46;
-  box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+button.small {
+    padding: 1px 6px;
+    font-size: 12px;
+}
+
+input[type="number"], input[type="text"], select {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    color: #000000;
+    background-color: #ffffff;
+    border: 2px solid;
+    border-color: #404040 #ffffff #ffffff #404040;
+    border-radius: 0;
+    padding: 2px 4px;
+    box-sizing: border-box;
+}
+
+input:focus-visible, select:focus-visible {
+    outline: 1px dotted #000000;
+}
+
+/* --- tables --- */
+
+table.form td {
+    padding: 3px 6px 3px 0;
+}
+
+table.data {
+    border: 2px outset #808080;
+    border-spacing: 2px;
+    background-color: #c0c0c0;
+}
+
+table.data th, table.data td {
+    border: 1px inset #808080;
+    padding: 3px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+table.data th {
+    background-color: #000080;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+table.data td {
+    background-color: #ffffff;
+}
+
+table.data.compact th, table.data.compact td {
+    padding: 2px 3px;
 }

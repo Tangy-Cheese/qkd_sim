@@ -1,43 +1,263 @@
 #body {
-    margin-top: 10%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 800px;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
-#buttonExplain {
-    margin-bottom:3em;
-}
-
-#bb84Form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5em;
-    margin-bottom: 2em;
-}
-
-#bb84FormElement {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5em;
-}
-
-#results{
-    display: flex;
-    flex-direction: row;
-    gap: 0.5em;
-    text-align: left;
-    margin-top:-1em;
-}
-
-#results_wrapper{
+#banner {
+    border: 4px ridge #c0c0c0;
+    background-color: #000000;
+    padding: 6px 10px 10px;
     text-align: center;
+}
+
+#banner h1 {
+    font-size: 44px;
+    letter-spacing: 2px;
+}
+
+#banner p {
+    margin: 0 0 8px;
+    color: #00ff00;
+    font-style: italic;
+}
+
+#layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+#sidebar {
+    flex: 0 0 170px;
+    border: 4px ridge #c0c0c0;
+    background-color: #000060;
+    padding: 8px;
+    font-size: 15px;
+}
+
+#sidebar h3 {
+    color: #ff66ff;
+    margin: 0 0 4px;
+    font-size: 17px;
+}
+
+#sidebar ul {
+    list-style: none;
+    margin: 0 0 10px;
+    padding: 0;
+}
+
+#sidebar li {
+    padding: 2px 0;
+}
+
+#sidebar li::before {
+    content: "» ";
+    color: #ff0000;
+}
+
+#sidebar li.current a {
+    color: #ffff00;
+    font-weight: bold;
+}
+
+#status {
+    border: 2px inset #c0c0c0;
+    background-color: #000000;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    text-align: center;
+    padding: 4px 2px;
+}
+
+#status .online {
+    color: #00ff00;
+}
+
+#status .offline {
+    color: #ff3333;
+}
+
+#status .checking {
+    color: #ffaa00;
+}
+
+#status small {
+    display: block;
+    color: #c0c0c0;
+}
+
+#content {
+    flex: 1;
+    min-width: 0;
+    border: 4px ridge #c0c0c0;
+    background-color: rgba(0, 0, 40, 0.85);
+    padding: 6px 16px 16px;
+}
+
+#footer {
+    text-align: center;
+    font-size: 13px;
+    color: #c0c0c0;
+    margin-top: 12px;
+}
+
+/* odometer style hit counter */
+.counter {
+    display: inline-block;
+    background-color: #000000;
+    border: 2px inset #c0c0c0;
+    padding: 2px 3px;
+}
+
+.counter b {
+    display: inline-block;
+    width: 13px;
+    margin: 0 1px;
+    background-color: #202020;
+    color: #00ff00;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    text-align: center;
+}
+
+.badge {
+    display: inline-block;
+    border: 2px outset #c0c0c0;
+    background-color: #c0c0c0;
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 6px;
+    margin: 4px 2px;
+}
+
+.centre {
+    text-align: center;
+}
+
+ul.links li {
+    margin: 6px 0;
+}
+
+/* --- protocol pages --- */
+
+.ascii {
+    color: #00ff00;
+    background-color: #000000;
+    border: 2px inset #c0c0c0;
+    padding: 8px;
+    font-size: 14px;
+    overflow-x: auto;
 }
 
 .buttons {
     display: flex;
     flex-direction: row;
-    gap: 1em;
+    gap: 8px;
     align-items: center;
+    margin-top: 10px;
+}
+
+.verdict {
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    margin: 0 0 10px;
+}
+
+.verdict.good {
+    color: #006600;
+}
+
+.verdict.bad, .error {
+    color: #cc0000;
+}
+
+.error {
+    font-weight: bold;
+    margin: 0;
+}
+
+.key {
+    word-break: break-all;
+}
+
+/* --- network page --- */
+
+.netmap {
+    display: block;
+    width: 100%;
+    border: 2px inset #c0c0c0;
+    /* green grid on black, like a radar screen */
+    background-color: #000000;
+    background-image:
+        linear-gradient(#003300 1px, transparent 1px),
+        linear-gradient(90deg, #003300 1px, transparent 1px);
+    background-size: 20px 20px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+
+.netmap text {
+    fill: #00ff00;
+    text-anchor: middle;
+}
+
+.netmap .edge path {
+    fill: none;
+    stroke: #008800;
+    stroke-width: 2;
+}
+
+.netmap .edge.used path {
+    stroke: #ffff00;
+    stroke-width: 3;
+    stroke-dasharray: 8 6;
+    animation: flow 0.8s linear infinite;
+}
+
+.netmap .edge.eve path {
+    stroke: #ff0000;
+}
+
+.netmap .edge.eve text {
+    fill: #ff5555;
+}
+
+.netmap .edge .qber {
+    fill: #ffff00;
+}
+
+@keyframes flow {
+    to {
+        stroke-dashoffset: -14;
+    }
+}
+
+.netmap .node rect {
+    fill: #c0c0c0;
+    stroke: #ffffff;
+    stroke-width: 2;
+}
+
+.netmap .node.endpoint rect {
+    fill: #ff00ff;
+}
+
+.netmap .node .role {
+    fill: #000000;
+    font-weight: bold;
+}
+
+.notice {
+    color: #ffaa00;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+}
+
+input.narrow {
+    width: 62px;
 }
