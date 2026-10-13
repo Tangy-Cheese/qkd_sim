@@ -42,8 +42,8 @@ pip install fastapi uvicorn
 From project root:
 
 ```bash
-cd backend
-uvicorn main:app --reload
+cd backend/src
+python -m uvicorn main:app --reload
 ```
 
 Server is up when you see `uvicorn running on http://127.0.0.1:8000`.
@@ -67,3 +67,7 @@ cd frontend
 npm ci
 npm run dev
 ```
+
+Open `http://localhost:5173`. Start the backend first: the frontend sends its requests to `/api`, which the Vite dev server forwards to `http://127.0.0.1:8000`. The sidebar shows whether the backend is reachable.
+
+To use a backend running somewhere else, set `VITE_API_URL` (e.g. `VITE_API_URL=http://localhost:9000 npm run dev`) and add the frontend's address to `allow_origins` in `backend/src/main.py`.
