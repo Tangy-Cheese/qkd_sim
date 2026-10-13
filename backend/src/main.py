@@ -67,6 +67,39 @@ def run_e91(data: dict)->dict:
 
 
 @app.post("/simulation")
-def run_simulation(data: dict)->dict:
-    
-    return results #fastapi should send this as JSON
+def run_simulation(data: dict) -> dict:
+    node_names = data.get("nodes", [])
+    edge_defs = data.get("edges", [])
+    root_name = data.get("root")
+    target_name = data.get("target")
+    key_length = int(data.get("key_length", 1000))
+    dark_count_rate = float(data.get("dark_count_rate", 0.08))
+
+    node_map = {name: nw.Node(name) for name in node_names}
+
+    edges = []
+    for e in edge_defs:
+        eve = Eve(key_length) if e.get("eve") else None
+        edges.append(nw.Edge(
+            node_map[e["node1"]],
+            node_map[e["node2"]],
+            e["distance_km"],
+            e["attenuation"],
+            eve
+        ))
+
+    network = nw.Network(list(node_map.values()), edges)
+    simulation = sim.Simulation(network)
+
+    return simulation.run(node_map[root_name], node_map[target_name], key_length, dark_count_rate)
+
+
+@app.get("/network/default")
+def get_default_network() -> dict:
+    return {
+        "nodes": ["Alice", "Bob", "Charlie"],
+        "edges": [
+            {"node1": "Alice", "node2": "Bob", "distance_km": 80, "attenuation": 0.2, "eve": False},
+            {"node1": "Bob", "node2": "Charlie", "distance_km": 60, "attenuation": 0.2, "eve": False}
+        ]
+    }

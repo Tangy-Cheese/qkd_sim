@@ -44,80 +44,64 @@ class Simulation:
             have a different dark count rate)
         :return: security eval including all the main results in the form of a dict 
         """
-        path = self.network.bfs_search(root, target) #list of nodes
-       
+        path = self.network.bfs_search(root, target)
+
         path_distance = 0
-        n_secure_nodes = len(path)-2
+        n_secure_nodes = len(path) - 2
+        link_results = []
 
-        for i in range(len(path)-1):
-            
+        for i in range(len(path) - 1):
             sending_node = path[i]
-            receiving_node = path[i+1]
-            #consecutive node labelling
+            receiving_node = path[i + 1]
 
-            if self.network.graph[sending_node][0] == receiving_node:
-                #this checks the corresponoding channel for the first two nodes in the list
+            channel = None
+            for neighbour, ch in self.network.graph[sending_node]:
+                if neighbour == receiving_node:
+                    channel = ch
+                    break
 
-                link = self.network.graph[path[i]][1] 
-                #if it is then take the next element of that key which is the channel for those two
-                    
-                path_distance += link.distance
+            if channel is None:
+                continue
 
-                sender = protocols.bb84.Alice(key_length) #model the first node as alice
-                reciever = protocols.bb84.Bob(key_length, dark_count_rate) #model the second as bob
+            path_distance += channel.distance
 
-                net = protocols.bb84.BB84(sender, reciever, link)
-                #simulate the two nodes with bb84 and retrive the results
-                result = net.run() #dict form 
+            sender = protocols.bb84.Alice(key_length)
+            receiver = protocols.bb84.Bob(key_length, dark_count_rate)
+            bb84_run = protocols.bb84.BB84(sender, receiver, channel)
+            result = bb84_run.run()
 
-                #We add key attributes to the nodes
-                sending_node.key = result["keys"]["corrected_key"]
-                receiving_node.key = result["keys"]["corrected_key"]
+            sending_node.key = result["keys"]["corrected_key"]
+            receiving_node.key = result["keys"]["corrected_key"]
 
-                #ADding attributes to channel now
-                link.qber = result["measurements"]["error_rate"]
-                link.skr = result["measurements"]["secure_key_rate"]
-                
-                del sender
-                del reciever
-                del net
-           
-        #comparing key rates
+            channel.qber = result["measurements"]["error_rate"]
+            channel.skr = result["measurements"]["secure_key_rate"]
 
-        sim_skr = 0
-        sim_qber = 0
+            link_results.append({
+                "from": sending_node.identity,
+                "to": receiving_node.identity,
+                "qber": channel.qber,
+                "skr": channel.skr,
+                "distance_km": channel.distance
+            })
 
-        for i in range(len(self.network.links)-1):
-            if self.network.links[i].channel.qber < self.network.links[i+1].channel.qber:  
-                sim_skr = self.network.links[i].channel.qber
-                sim_qber = self.network.links[i].channel.skr
+            del sender, receiver, bb84_run
 
-        #comparing keys
-        for i in range(len(self.network.nodes) - 1):
-                pass 
+        sim_qber = max((r["qber"] for r in link_results), default=0)
+        sim_skr = min((r["skr"] for r in link_results), default=0)
 
-
-        results = {
-            "root" : root,
-            "target" : target,
-
-            "network":{
-                "distance":path_distance,
-                "number_of_secure_nodes":n_secure_nodes,
+        return {
+            "root": root.identity,
+            "target": target.identity,
+            "network": {
+                "distance_km": path_distance,
+                "number_of_secure_nodes": n_secure_nodes,
+                "links": link_results
             },
-
-            "security":{
-                "secure_key_rate":sim_skr,
-                "qubit_error_rate":sim_qber
-            },
-
-            "keys":{
-                f"{root.identity} key":"abc", 
-                f"{target.identity} key":"cde"
+            "security": {
+                "secure_key_rate": sim_skr,
+                "qubit_error_rate": sim_qber
             }
         }
-
-        return results
 
 
 if __name__ == "__main__":

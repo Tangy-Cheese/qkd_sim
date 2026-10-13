@@ -1,5 +1,5 @@
 import pytest
-from protocols.bb84 import Alice, Bob, Eve, BB84, error_rate
+from protocols.bb84 import Alice, Bob, Eve, Channel, BB84
 import numpy as np
 
 
@@ -12,10 +12,11 @@ def test_no_eve():
     length = 10000  # use a large bitstring for testing
 
     alice = Alice(length)
-    bob = Bob(length)
-    protocol = BB84(alice, bob, eve=None)
+    bob = Bob(length, dark_count_rate=0)
+    channel = Channel(None, distance=0, fibre_attenuation=0.2)
+    protocol = BB84(alice, bob, channel)
 
-    err_rate = error_rate(protocol.run())
+    err_rate = protocol.run()["measurements"]["error_rate"]
 
     assert err_rate == 0.0
 
@@ -27,11 +28,12 @@ def test_eve():
     length = 100000  # use a large bitstring for testing
 
     alice = Alice(length)
-    bob = Bob(length)
+    bob = Bob(length, dark_count_rate=0)
     eve = Eve(length)
+    channel = Channel(eve, distance=0, fibre_attenuation=0.2)
 
-    protocol = BB84(alice, bob, eve)
+    protocol = BB84(alice, bob, channel)
     
-    err_rate = error_rate(protocol.run())
+    err_rate = protocol.run()["measurements"]["error_rate"]
 
-    assert np.allclose(err_rate, 0.25, rtol = 1e-2)
+    assert np.allclose(err_rate, 0.25, atol = 1e-2)

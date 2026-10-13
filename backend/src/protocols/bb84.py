@@ -184,8 +184,7 @@ class Channel:
         :param fibre_attenuation: Loss of photons between Alice and Bob due to fibre
             attenuation. 
         """
-        if eve:
-            self.eve = eve
+        self.eve = eve
 
         self.distance = distance #km
         self.attenuation = fibre_attenuation
