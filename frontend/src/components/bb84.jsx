@@ -23,7 +23,7 @@ export default function BB84({ handleReturnClick }) {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:8000/simulation", {
+            const response = await fetch("http://localhost:8000/protocols/bb84", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
