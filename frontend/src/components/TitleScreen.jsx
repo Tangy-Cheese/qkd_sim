@@ -1,19 +1,53 @@
-const HITS_KEY = "qkdsim_hits";
+import { useEffect, useState } from "react";
+import { addVisitor, getVisitors } from "../api.js";
 
-// Counts visits from this browser only, there is no server side counter
-function bumpHits() {
-    try {
-        const hits = Number(localStorage.getItem(HITS_KEY) ?? 1336) + 1;
-        localStorage.setItem(HITS_KEY, String(hits));
-        return hits;
-    } catch {
-        return 1337;
+const COUNTED_KEY = "qkdsim_counted";
+
+// Count each browser session once. Reloads and coming back to the home page only read the total.
+// Kept outside the component so StrictMode mounting twice does not send two visits.
+let visitorRequest = null;
+
+function loadVisitors() {
+    if (!visitorRequest) {
+        let counted = false;
+        try {
+            counted = sessionStorage.getItem(COUNTED_KEY) === "1";
+        } catch {
+            // storage blocked, count this page load
+        }
+
+        visitorRequest = (counted ? getVisitors() : addVisitor()).then((data) => {
+            try {
+                sessionStorage.setItem(COUNTED_KEY, "1");
+            } catch {
+                // nothing to remember it in
+            }
+            return data.count;
+        });
+        visitorRequest.catch(() => {
+            visitorRequest = null; // try again next time the home page opens
+        });
     }
+    return visitorRequest;
 }
 
-const hits = bumpHits();
+function useVisitorCount() {
+    const [count, setCount] = useState(undefined); // undefined while loading, null if the backend is offline
+
+    useEffect(() => {
+        let cancelled = false;
+        loadVisitors()
+            .then((n) => { if (!cancelled) setCount(n); })
+            .catch(() => { if (!cancelled) setCount(null); });
+        return () => { cancelled = true; };
+    }, []);
+
+    return count;
+}
 
 export default function TitleScreen(){
+    const hits = useVisitorCount();
+
     return(
         <>
             <h1 id="welcomeMessage">Welcome to QKDSim!</h1>
@@ -47,10 +81,18 @@ export default function TitleScreen(){
             </p>
             <div className="construction" />
             <p className="centre">
-                You are visitor number{" "}
-                <span className="counter">
-                    {String(hits).padStart(6, "0").split("").map((digit, i) => <b key={i}>{digit}</b>)}
-                </span>
+                {hits === undefined ? (
+                    "Counting visitors..."
+                ) : hits === null ? (
+                    "Visitor count unavailable while the backend is offline."
+                ) : (
+                    <>
+                        You are visitor number{" "}
+                        <span className="counter">
+                            {String(hits).padStart(6, "0").split("").map((digit, i) => <b key={i}>{digit}</b>)}
+                        </span>
+                    </>
+                )}
             </p>
         </>
     )

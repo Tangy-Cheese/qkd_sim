@@ -82,3 +82,11 @@ export function runSimulation(params, signal) {
 export function getDefaultNetwork(signal) {
     return request("/network/default", { signal });
 }
+
+export function getVisitors(signal) {
+    return request("/visitors", { signal });
+}
+
+export function addVisitor(signal) {
+    return post("/visitors", {}, signal);
+}
