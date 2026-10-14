@@ -104,25 +104,6 @@
     margin-top: 12px;
 }
 
-/* odometer style hit counter */
-.counter {
-    display: inline-block;
-    background-color: #000000;
-    border: 2px inset #c0c0c0;
-    padding: 2px 3px;
-}
-
-.counter b {
-    display: inline-block;
-    width: 13px;
-    margin: 0 1px;
-    background-color: #202020;
-    color: #00ff00;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 16px;
-    text-align: center;
-}
-
 .badge {
     display: inline-block;
     border: 2px outset #c0c0c0;

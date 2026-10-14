@@ -7,7 +7,6 @@ import protocols.e91
 
 import network as nw
 import simulation as sim
-from visitors import counter
 
 app = FastAPI()
 
@@ -126,14 +125,3 @@ def get_default_network() -> dict:
             {"node1": "Bob", "node2": "Charlie", "distance_km": 60, "attenuation": 0.2, "eve": False}
         ]
     }
-
-
-#Each browser session counts once, the frontend calls POST on its first visit and GET after that
-@app.get("/visitors")
-def get_visitors() -> dict:
-    return {"count": counter.count()}
-
-
-@app.post("/visitors")
-def add_visitor() -> dict:
-    return {"count": counter.increment()}

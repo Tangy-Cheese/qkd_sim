@@ -303,5 +303,3 @@ Thumbs.db
 # Claude Code
 .claude/
 
-# Visitor count kept by the backend
-backend/data/
