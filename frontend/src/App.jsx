@@ -119,7 +119,7 @@ function App() {
         <span className="badge">Backend: FastAPI + NumPy</span>
         <span className="badge">MIT License</span>
         <p>
-          © 2026 Adam and Pan. Source code on{" "}
+          © 2026 QKDSim. Source code on{" "}
           <a href="https://github.com/Tangy-Cheese/QKD">GitHub</a>.
         </p>
       </div>
