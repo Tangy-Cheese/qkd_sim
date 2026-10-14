@@ -68,11 +68,11 @@ function App() {
     <div id="body">
       <div id="banner">
         <h1 className="rainbow">~* QKDSim *~</h1>
-        <p>The Information Superhighway&apos;s #1 source for Quantum Key Distribution!</p>
+        <p>A simulator for quantum key distribution protocols and networks.</p>
         <div className="marquee">
           <span>
-            *** WELCOME TO QKDSIM *** Simulate unbreakable quantum cryptography from the comfort of your own
-            modem *** BB84 now ONLINE *** NEW: multi node NETWORK simulation *** E91 coming soon *** Eve is watching... or is she?? ***
+            *** WELCOME TO QKDSIM *** BB84 over lossy fibre, with or without an eavesdropper *** NEW: multi node NETWORK
+            simulation with trusted node key relay *** E91 is not implemented yet ***
           </span>
         </div>
       </div>
@@ -115,10 +115,13 @@ function App() {
 
       <div id="footer">
         <hr />
-        <span className="badge">Best viewed with Netscape Navigator 4.0</span>
-        <span className="badge">800 x 600</span>
-        <span className="badge">Made with Notepad</span>
-        <p>© 1997 QKDSim. No qubits were cloned in the making of this web site.</p>
+        <span className="badge">Frontend: React + Vite</span>
+        <span className="badge">Backend: FastAPI + NumPy</span>
+        <span className="badge">MIT License</span>
+        <p>
+          © 2026 Adam and Pan. Source code on{" "}
+          <a href="https://github.com/Tangy-Cheese/QKD">GitHub</a>.
+        </p>
       </div>
     </div>
   )
