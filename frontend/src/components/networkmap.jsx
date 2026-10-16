@@ -329,7 +329,7 @@ export default function NetworkMap() {
                             </tr>
                             <tr>
                                 <td><label htmlFor="netkeylen">Key length (qubits per link):</label></td>
-                                <td><input type="number" id="netkeylen" name="keylen" min="1" step="1" defaultValue="10000" required /></td>
+                                <td><input type="number" id="netkeylen" name="keylen" min="1" max="20000" step="1" defaultValue="10000" required /></td>
                             </tr>
                             <tr>
                                 <td><label htmlFor="darkcount">Dark count rate:</label></td>

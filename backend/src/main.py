@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
@@ -14,11 +16,20 @@ app = FastAPI()
 #Anything much higher drowns the signal after a few tens of km and every run gets aborted.
 DARK_COUNT_RATE = 1e-3
 
+#The public demo runs on a small free server where 100k qubits takes ~25s, so keep requests small enough to answer quickly
+MAX_KEY_LENGTH = 20000
+MAX_NODES = 12
+MAX_EDGES = 30
+
+#Local dev servers plus the GitHub Pages site. Extra origins can be added with a comma separated CORS_ORIGINS env var
+ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173", "https://tangy-cheese.github.io"]
+ALLOWED_ORIGINS += [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+
 #read this: https://fastapi.tiangolo.com/tutorial/cors/.
 # It will make more sense afterwards this is what allows javascript and python to interact I believe
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # only allow requests from these urls
+    allow_origins=ALLOWED_ORIGINS,  # only allow requests from these urls
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -28,7 +39,7 @@ app.add_middleware(
 # Request bodies. FastAPI validates these and answers with a 422 if a field is missing or invalid
 class ProtocolRequest(BaseModel):
     protocol: str | None = None
-    key_length: int = Field(gt=0)
+    key_length: int = Field(gt=0, le=MAX_KEY_LENGTH)
     fibre_length: float = Field(ge=0) #km
     fibre_attenuation: float = Field(ge=0) #in units of e-3 dB/km, as entered in the frontend form
     eve: bool = False
@@ -43,11 +54,11 @@ class EdgeRequest(BaseModel):
 
 
 class SimulationRequest(BaseModel):
-    nodes: list[str]
-    edges: list[EdgeRequest]
+    nodes: list[str] = Field(max_length=MAX_NODES)
+    edges: list[EdgeRequest] = Field(max_length=MAX_EDGES)
     root: str
     target: str
-    key_length: int = Field(default=10000, gt=0) #long links lose most photons, so short keys leave nothing to work with
+    key_length: int = Field(default=10000, gt=0, le=MAX_KEY_LENGTH) #long links lose most photons, so short keys leave nothing to work with
     dark_count_rate: float = Field(default=DARK_COUNT_RATE, ge=0, le=1)
 
     @model_validator(mode="after")
@@ -64,6 +75,12 @@ class SimulationRequest(BaseModel):
                     raise ValueError(f"Edge references unknown node '{name}'.")
 
         return self
+
+
+#Lets the bare URL show something, and gives the frontend a cheap call to wake the server up
+@app.get("/")
+def root()->dict:
+    return {"status": "ok", "docs": "/docs"}
 
 
 # Simulation route http://localhost:8000/simulation link react here

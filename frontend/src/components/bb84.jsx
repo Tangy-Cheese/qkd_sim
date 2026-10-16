@@ -73,7 +73,7 @@ export default function BB84() {
                         <tbody>
                             <tr>
                                 <td><label htmlFor="keylen">Key length (qubits):</label></td>
-                                <td><input type="number" id="keylen" name="keylen" min="1" step="1" defaultValue="10000" required /></td>
+                                <td><input type="number" id="keylen" name="keylen" min="1" max="20000" step="1" defaultValue="10000" required /></td>
                             </tr>
                             <tr>
                                 <td><label htmlFor="fibrelen">Fibre length (km):</label></td>
