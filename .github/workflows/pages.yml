@@ -1,9 +1,9 @@
 name: Deploy frontend
 
 on:
-  push:
-    branches: [main]
-    paths: ["frontend/**", ".github/workflows/pages.yml"]
+  # Cron cannot do "every 2 weeks" exactly, so rebuild on the 1st and 15th of each month
+  schedule:
+    - cron: "0 6 1,15 * *"
   workflow_dispatch:
 
 permissions:

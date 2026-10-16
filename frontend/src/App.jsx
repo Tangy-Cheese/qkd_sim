@@ -120,7 +120,7 @@ function App() {
         <span className="badge">MIT License</span>
         <p>
           © 2026 QKDSim. Source code on{" "}
-          <a href="https://github.com/Tangy-Cheese/QKD">GitHub</a>.
+          <a href="https://github.com/Tangy-Cheese/qkd_sim">GitHub</a>.
         </p>
       </div>
     </div>

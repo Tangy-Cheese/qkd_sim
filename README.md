@@ -4,11 +4,15 @@
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-<!-- TODO: uncomment and set the URL once the site is deployed
-[![Live demo](https://img.shields.io/badge/Live_demo-online-brightgreen)](https://YOUR-DEMO-URL)
--->
+[![Live demo](https://img.shields.io/badge/Live_demo-online-brightgreen)](https://tangy-cheese.github.io/qkd_sim/)
 
 Website which displays how various quantum communication protocols can interact.
+
+**Live demo: https://tangy-cheese.github.io/qkd_sim/**
+
+> The backend runs on a free server that sleeps when idle, so the first request can take up to a minute to wake it.
+
+![QKDSim home page](docs/homepage.png)
 
 ## What is this?
 
@@ -24,8 +28,8 @@ QKDSim is a simulator for quantum key distribution (QKD): ways for two parties t
 ## Development Setup
 
 ```bash
-git clone https://github.com/Tangy-Cheese/QKD.git
-cd QKD/
+git clone https://github.com/Tangy-Cheese/qkd_sim.git
+cd qkd_sim/
 
 # Create a python virtual environment
 python -m venv .venv

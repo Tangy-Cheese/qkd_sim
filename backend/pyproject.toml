@@ -25,7 +25,7 @@ test = [
 ]
 
 [project.urls]
-repository = "https://github.com/Tangy-Cheese/QKD"
+repository = "https://github.com/Tangy-Cheese/qkd_sim"
 
 [build-system]
 requires = ["setuptools>=61.0"]
