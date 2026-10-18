@@ -3,6 +3,7 @@ import TitleScreen from './components/TitleScreen.jsx'
 import BB84 from './components/bb84.jsx'
 import E91 from './components/e91.jsx'
 import NetworkMap from './components/networkmap.jsx'
+import About from './components/about.jsx'
 import { getDefaultNetwork } from './api.js'
 import './App.css'
 
@@ -11,6 +12,7 @@ const PAGES = [
   { hash: "bb84", label: "BB84" },
   { hash: "e91", label: "E91" },
   { hash: "network", label: "Network" },
+  { hash: "about", label: "About" },
 ]
 
 const STATUS_POLL_MS = 5000
@@ -108,7 +110,9 @@ function App() {
               <E91 /> :
               currentPage === "network" ?
                 <NetworkMap /> :
-                <TitleScreen />
+                currentPage === "about" ?
+                  <About /> :
+                  <TitleScreen />
           }
         </div>
       </div>

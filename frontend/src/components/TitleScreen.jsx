@@ -25,6 +25,12 @@ export default function TitleScreen(){
                     Trusted node key relay over the lowest loss route.
                 </li>
             </ul>
+            <p>To understand how it works:</p>
+            <ul className="links">
+                <li>
+                    <a href="#about">About</a>
+                </li>
+            </ul>
         </>
     )
 }
