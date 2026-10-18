@@ -34,12 +34,13 @@ function BellMeter({ S, classical, quantum }) {
             ))}
 
             <line className="limit" x1={meterX(classical)} x2={meterX(classical)} y1="24" y2="52" />
-            <text className="limit" x={meterX(classical) - 4} y="16" textAnchor="end">classical ≤ 2</text>
+            <text className="limit" x={meterX(classical) - 4} y="16" style={{ textAnchor: "end" }}>classical ≤ 2</text>
             <line className="limit" x1={meterX(quantum)} x2={meterX(quantum)} y1="24" y2="52" />
-            <text className="limit" x="396" y="16" textAnchor="end">quantum 2√2</text>
+            <text className="limit" x="396" y="16" style={{ textAnchor: "end" }}>quantum 2√2</text>
 
             <polygon className="needle" points={`${meterX(S)},48 ${meterX(S) - 7},60 ${meterX(S) + 7},60`} transform="translate(0, 16)" />
-            <text className="needle" x={meterX(S)} y="88">S = {S.toFixed(3)}</text>
+            {/* near the right edge the label would be cut off, so it hangs to the left of the needle */}
+            <text className="needle" x={S > 2.5 ? meterX(S) + 10 : meterX(S)} y="88" style={{ textAnchor: S > 2.5 ? "end" : "middle" }}>S = {S.toFixed(3)}</text>
         </svg>
     );
 }
