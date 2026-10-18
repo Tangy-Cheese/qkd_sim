@@ -14,8 +14,8 @@ export default function TitleScreen(){
                     Alice, Bob, one fibre and (maybe) an eavesdropper.
                 </li>
                 <li>
-                    <a href="#e91">E91</a><br />
-                    Entanglement based key distribution. Still being built!
+                    <a href="#e91">E91</a> <span className="new blink">NEW!</span><br />
+                    Entangled photon pairs and a Bell test to catch Eve.
                 </li>
             </ul>
             <p>Or wire up a whole network of nodes:</p>

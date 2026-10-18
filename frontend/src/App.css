@@ -242,3 +242,34 @@ ul.links li {
 input.narrow {
     width: 62px;
 }
+
+/* --- E91 Bell meter --- */
+
+.bellmeter {
+    margin-bottom: 10px;
+    background-size: 10px 10px;
+}
+
+.bellmeter .zone.classical {
+    fill: #440000;
+    stroke: #ff5555;
+}
+
+.bellmeter .zone.quantum {
+    fill: #003300;
+    stroke: #00ff00;
+}
+
+.bellmeter line.limit {
+    stroke: #ffff00;
+    stroke-width: 2;
+}
+
+.bellmeter text.limit {
+    fill: #ffff00;
+}
+
+.bellmeter .needle {
+    fill: #ff00ff;
+    font-weight: bold;
+}

@@ -72,7 +72,7 @@ function App() {
         <div className="marquee">
           <span>
             *** WELCOME TO QKDSIM *** BB84 over lossy fibre, with or without an eavesdropper *** NEW: multi node NETWORK
-            simulation with trusted node key relay *** E91 is not implemented yet ***
+            simulation with trusted node key relay *** NEW: E91 with entangled photons and a Bell test ***
           </span>
         </div>
       </div>
