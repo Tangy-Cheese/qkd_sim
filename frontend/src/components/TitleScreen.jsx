@@ -4,7 +4,7 @@ export default function TitleScreen(){
             <h1 id="welcomeMessage">Welcome to QKDSim!</h1>
             <p className="centre">
                 You have reached the <b>home page</b> of the quantum key distribution simulator.
-                Sign the guestbook... just kidding, there is no guestbook, Eve would read it.
+                This site has toy simulations of BB84 and E91 qkd protocols.
             </p>
             <hr />
             <p id="buttonExplain">Choose which protocol you want to simulate from the following:</p>
@@ -28,7 +28,7 @@ export default function TitleScreen(){
             <p>To understand how it works:</p>
             <ul className="links">
                 <li>
-                    <a href="#about">About</a>
+                    <a href="#how-it-works">How it works</a>
                 </li>
             </ul>
         </>
