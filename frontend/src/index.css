@@ -117,13 +117,6 @@ tt, pre {
     padding: 0 3px;
 }
 
-/* yellow and black hazard tape */
-.construction {
-    height: 18px;
-    border: 2px solid #000000;
-    background: repeating-linear-gradient(45deg, #ffcc00 0 14px, #000000 14px 28px);
-}
-
 /* --- grey windows, buttons and inputs --- */
 
 .window {

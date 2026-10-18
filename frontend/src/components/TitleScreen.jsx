@@ -25,12 +25,6 @@ export default function TitleScreen(){
                     Trusted node key relay over the lowest loss route.
                 </li>
             </ul>
-            <hr />
-            <div className="construction" />
-            <p className="centre">
-                <span className="blink">!!</span> This site is always UNDER CONSTRUCTION <span className="blink">!!</span>
-            </p>
-            <div className="construction" />
         </>
     )
 }
