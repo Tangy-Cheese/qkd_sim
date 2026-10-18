@@ -248,8 +248,8 @@ export default function NetworkMap() {
         <>
             <h1 className="rainbow">Network Simulation</h1>
             <p>
-                Build a network of <b>trusted nodes</b> joined by fibres. The server finds the lowest loss
-                route from the sender to the receiver, runs BB84 over every link on it and relays the key
+                Build a network of <b>trusted nodes</b> joined by fibres. The server finds the route from the
+                sender to the receiver whose worst link has the lowest loss, runs BB84 over every link on it and relays the key
                 hop by hop. Put Eve on a link and watch the whole route fall over!
             </p>
 

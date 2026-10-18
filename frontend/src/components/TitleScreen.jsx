@@ -22,7 +22,7 @@ export default function TitleScreen(){
             <ul className="links">
                 <li>
                     <a href="#network">Network Simulation</a> <span className="new blink">NEW!</span><br />
-                    Trusted node key relay over the lowest loss route.
+                    Trusted node key relay along the route with the strongest weakest link.
                 </li>
             </ul>
             <p>To understand how it works:</p>

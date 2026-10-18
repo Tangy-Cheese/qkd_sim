@@ -13,7 +13,7 @@ export default function HowItWorks() {
 
             {/* TODO: Fibre loss. Attenuation, distance, dark counts. */}
 
-            {/* TODO: Networks. Trusted nodes, Dijkstra lowest loss route, XOR key relay. */}
+            {/* TODO: Networks. Trusted nodes, modified Dijkstra (route whose worst link has the lowest loss), XOR key relay. */}
 
             {/* TODO: References. See docs/refs.bib. */}
         </>

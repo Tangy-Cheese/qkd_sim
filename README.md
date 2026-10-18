@@ -22,7 +22,7 @@ QKDSim is a simulator for quantum key distribution (QKD): ways for two parties t
 
 - **BB84 over a single fibre.** Choose the number of qubits Alice sends, the fibre length and its attenuation, and optionally put an eavesdropper (Eve) on the line. The simulation models photon loss, detector dark counts, basis sifting, error correction and privacy amplification, and reports the qubit error rate (QBER), the secure key rate and the final secure key. If the error rate is too high for any secure key to be left, the run is aborted.
 - **E91 over a single fibre.** A source next to Alice makes entangled photon pairs and sends one photon of each pair down the fibre to Bob. Both measure at random polariser angles. Pairs with matching angles become the key, and a CHSH Bell test on four other angle combinations checks the photons were still entangled. Without Eve the Bell value is S ≈ 2√2 ≈ 2.83. Eve measuring the photons breaks the entanglement, S drops to 2 or below and the run is aborted.
-- **Networks of trusted nodes.** Build a network of nodes joined by fibre links, each with its own length, attenuation and optional eavesdropper. The simulator finds the lowest loss route between a sender and a receiver with Dijkstra's algorithm, runs BB84 over every link on that route and relays the key hop by hop, XOR-encrypting it with each link's key. The route is drawn on a map with the error rate of each link.
+- **Networks of trusted nodes.** Build a network of nodes joined by fibre links, each with its own length, attenuation and optional eavesdropper. A route's key rate is only as good as its worst link, so the simulator uses a modified Dijkstra's algorithm to find the route between a sender and a receiver whose worst link has the lowest loss (total loss breaks ties). It runs BB84 over every link on that route and relays the key hop by hop, XOR-encrypting it with each link's key. The route is drawn on a map with the error rate of each link.
 
 - Results are random, so two runs with the same settings give slightly different numbers.
 
@@ -41,15 +41,16 @@ source .venv/bin/activate
 # Windows
 .venv\Scripts\activate
 
-# Intall package dependencies
-pip install -e .[test]
+# Install package dependencies
+pip install -e "./backend[test]"
 ```
 
-`-e` installs in editable mode, linking to `src/` so source changes reflect immediately. `.[test]` pulls project dependencies plus pytest.
+`-e` installs in editable mode, linking to `backend/src/` so source changes reflect immediately. `[test]` pulls project dependencies plus pytest.
 
 ### Tests
 
 ```bash
+cd backend
 pytest
 ```
 
