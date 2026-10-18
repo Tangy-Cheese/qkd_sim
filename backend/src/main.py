@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
 
 from protocols.bb84 import Alice, Bob, Eve, Channel, BB84
-import protocols.e91
+import protocols.e91 as e91
 
 import network as nw
 import simulation as sim
@@ -105,8 +105,16 @@ def run_bb84(data: ProtocolRequest)->dict:
 # Simulation route http://localhost:8000/simulation link react here
 @app.post("/protocols/e91")
 def run_e91(data: ProtocolRequest)->dict:
-    #protocols/e91.py is still a stub, so dont pretend by running BB84 instead
-    raise HTTPException(status_code=501, detail="E91 is not implemented yet.")
+    fibre_attenuation = data.fibre_attenuation*10**(-3)
+
+    #key_length is the number of entangled pairs the source makes
+    alice = e91.Alice(data.key_length)
+    bob = e91.Bob(data.key_length, dark_count_rate=DARK_COUNT_RATE)
+    eve = e91.Eve(data.key_length) if data.eve else None
+
+    channel = Channel(eve, data.fibre_length, fibre_attenuation)
+
+    return e91.E91(alice, bob, channel).run()
 
 
 @app.post("/simulation")
