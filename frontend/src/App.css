@@ -89,6 +89,13 @@
     color: #c0c0c0;
 }
 
+#status-note {
+    margin: 6px 0 0;
+    font-size: 11px;
+    color: #c0c0c0;
+    text-align: center;
+}
+
 #content {
     flex: 1;
     min-width: 0;
@@ -272,4 +279,56 @@ input.narrow {
 .bellmeter .needle {
     fill: #ff00ff;
     font-weight: bold;
+}
+
+/* --- how it works page --- */
+
+.theory .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0;
+}
+
+.theory table.data, .theory .window-body table {
+    margin: 8px 0;
+}
+
+.theory .window-body table:not(.data) {
+    border-collapse: collapse;
+}
+
+.theory .window-body table:not(.data) th,
+.theory .window-body table:not(.data) td {
+    border: 1px solid #808080;
+    padding: 2px 8px;
+}
+
+.angledemo {
+    background-color: #ffffff;
+    border: 2px inset #c0c0c0;
+    padding: 8px;
+    margin: 8px 0;
+}
+
+.angledemo input[type="range"] {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+}
+
+.angledemo td:nth-child(2) {
+    width: 50%;
+}
+
+.angledemo .bar {
+    display: block;
+    height: 12px;
+}
+
+.angledemo .bar.opposite {
+    background-color: #000080;
+}
+
+.angledemo .bar.same {
+    background-color: #ff00ff;
 }

@@ -1,0 +1,213 @@
+import Window from "../components/Window.jsx";
+import BellMeter from "../components/BellMeter.jsx";
+import AngleDemo from "../components/AngleDemo.jsx";
+
+Quantum key distribution (QKD) lets two people, always called **Alice** and **Bob**, agree on a
+secret key using single photons. The key is then used to encrypt messages with an ordinary cipher.
+The trick is not that the photons are hard to intercept, it is that **measuring a quantum state
+disturbs it**. An eavesdropper, **Eve**, cannot copy an unknown photon (the no-cloning theorem) and
+cannot look at it without risking changing it, so Alice and Bob can check afterwards whether anyone
+was listening.
+
+<Window title="1. BB84 - prepare and measure">
+
+Alice sends single photons polarised in one of two **bases**:
+
+| Basis | bit 0 | bit 1 |
+|---|---|---|
+| Z (rectilinear) | $\lvert 0 \rangle$, horizontal | $\lvert 1 \rangle$, vertical |
+| X (diagonal) | $\lvert + \rangle$, 45° | $\lvert - \rangle$, 135° |
+
+where $\lvert \pm \rangle = (\lvert 0 \rangle \pm \lvert 1 \rangle)/\sqrt{2}$. For every photon Alice picks
+a random bit and a random basis. Bob measures each photon in his own random basis:
+
+- **Same basis**: Bob gets Alice's bit.
+- **Different basis**: Bob gets a coin flip, since $\lvert \langle 0 \vert + \rangle \rvert^2 = \tfrac{1}{2}$.
+
+Afterwards they announce their bases over a public channel (never the bits) and throw away every
+photon where the bases differ. This is **sifting**, and it keeps about half of the photons that arrive.
+
+**Catching Eve.** Eve measures each photon in a random basis and sends Bob a new one in the state she
+saw. Half the time she picks the wrong basis and sends the wrong kind of photon, and then Bob's
+result is wrong half the time even when his basis matches Alice's. So Eve causes errors in
+
+$$
+Q_{\text{Eve}} = \frac{1}{2} \times \frac{1}{2} = 25\%
+$$
+
+of the sifted key. Alice and Bob compare a sample of their bits, see the error rate, and know someone
+was listening.
+
+</Window>
+
+<Window title="2. E91 - entanglement and the Bell test">
+
+In E91 nobody prepares the key. A source makes pairs of photons in the entangled singlet state
+
+$$
+\lvert \Psi^- \rangle = \frac{1}{\sqrt{2}} \left( \lvert H V \rangle - \lvert V H \rangle \right)
+$$
+
+and sends one photon of each pair to Alice and one to Bob. Neither photon has a polarisation of its
+own until it is measured, but the pair always gives **opposite** results along the same axis. If Alice
+and Bob measure with polarisers at angles $a$ and $b$:
+
+$$
+P(\text{opposite}) = \cos^2(a - b)
+$$
+
+$$
+E(a, b) = P(\text{same}) - P(\text{opposite}) = -\cos 2(a - b)
+$$
+
+Try it, at $0^\circ$ the results are always opposite and at $45^\circ$ they are completely random:
+
+<AngleDemo />
+
+**Angles.** Alice picks randomly from $0^\circ, 22.5^\circ, 45^\circ$ and Bob from $22.5^\circ, 45^\circ, 67.5^\circ$. After
+measuring, they announce their angles:
+
+- **Same angle** ($22.5^\circ$ or $45^\circ$ on both sides, 2 of the 9 combinations): perfectly opposite results.
+  Bob flips his bits and these become the **sifted key**.
+- **CHSH angles** (4 of the 9 combinations): they announce these results and use them for the Bell test.
+- **The rest** (3 of the 9) are thrown away.
+
+**The Bell test.** From the four CHSH angle pairs they work out
+
+$$
+S = E(0^\circ, 22.5^\circ) - E(0^\circ, 67.5^\circ) + E(45^\circ, 22.5^\circ) + E(45^\circ, 67.5^\circ)
+$$
+
+Any classical source of correlations, where each photon carries a fixed answer for every angle,
+obeys the CHSH inequality $\lvert S \rvert \le 2$. Entangled photons break it, each correlation is
+$\mp 1/\sqrt{2}$ and
+
+$$
+\lvert S \rvert = 4 \times \frac{1}{\sqrt{2}} = 2\sqrt{2} \approx 2.83
+$$
+
+<BellMeter S={2.83} classical={2} quantum={2.83} />
+
+**Catching Eve.** If Eve measures Bob's photon, the entanglement is gone. Alice and Bob are left with
+photons that each have a definite polarisation, which is exactly the classical case, so
+$\lvert S \rvert \le 2$. In this simulator Eve's interception drops it to about $1.4$ and the run is
+aborted:
+
+<BellMeter S={1.4} classical={2} quantum={2.83} />
+
+The nice thing about E91 is that the security check does not depend on trusting the source. Even if
+Eve built the source herself, a Bell value close to $2\sqrt{2}$ proves the photons were entangled
+and so nobody else can know the results.
+
+</Window>
+
+<Window title="3. From sifted key to secret key">
+
+Even without Eve the sifted keys of Alice and Bob are not quite equal. The **quantum bit error rate**
+(QBER) is the fraction of sifted bits that disagree:
+
+$$
+Q = \frac{\text{bits that differ}}{\text{sifted key length}}
+$$
+
+Two classical steps turn the sifted key into a secret key:
+
+1. **Error correction.** Alice and Bob compare parities of blocks of their keys over the public channel
+   and fix the bits that differ (the Cascade protocol). Every parity they announce leaks a bit to
+   Eve. The ideal leak is $h(Q)$ bits per key bit, real protocols leak $f_{\text{EC}} \, h(Q)$ with
+   $f_{\text{EC}} \approx 1.15$.
+2. **Privacy amplification.** Eve may also know up to $h(Q)$ bits per key bit from the photons she
+   disturbed. Hashing the key down to a shorter one removes her knowledge.
+
+Here $h$ is the binary entropy
+
+$$
+h(Q) = -Q \log_2 Q - (1 - Q) \log_2 (1 - Q)
+$$
+
+so the fraction of the sifted key that survives is (Shor and Preskill)
+
+$$
+r = 1 - f_{\text{EC}} \, h(Q) - h(Q)
+$$
+
+and the **secure key rate**, in secret bits per photon sent, is
+
+$$
+R = \frac{\text{sifted key length}}{\text{photons sent}} \times r
+$$
+
+When $Q$ climbs above about $10\%$, $r$ hits zero: Eve could know as much as Bob, nothing secret
+is left and the run is **aborted**. Eve's $25\%$ in BB84 is well past that line.
+
+</Window>
+
+<Window title="4. Fibre loss and dark counts">
+
+Photons get absorbed in the fibre. Loss is measured in decibels, about $\alpha = 0.2$ dB/km for
+telecom fibre, so after $L$ km a photon survives with probability
+
+$$
+\eta = 10^{-\alpha L / 10}
+$$
+
+At 100 km that is $10^{-2}$: only one photon in a hundred arrives.
+
+Bob's detectors also click now and then with no photon at all, a **dark count**, with probability
+$p_{\text{dc}}$ (here $10^{-3}$) per time slot. A dark count gives a random bit, wrong half the time. Close
+by, real photons drown them out. Far away, real photons become rare and the dark counts take over:
+
+$$
+Q_{\text{dark}} \approx \frac{p_{\text{dc}} / 2}{\eta + p_{\text{dc}}}
+$$
+
+Setting this to the $10\%$ limit gives $\eta = 4 \, p_{\text{dc}}$, around 24 dB or **120 km** of fibre.
+Beyond that no key can be made, however many photons are sent. Gobby, Yuan and Shields reached
+122 km in a real experiment in 2004.
+
+</Window>
+
+<Window title="5. Networks of trusted nodes">
+
+Since a single link stops working after about 100 km, longer distances need a chain of
+**trusted nodes**. Each neighbouring pair of nodes runs BB84 over their own fibre and gets its own key.
+
+**Choosing a route.** The whole route is only as good as its worst link, because every link must
+produce a key. The simulator uses a modified Dijkstra's algorithm that finds the route whose
+**worst** link has the lowest loss, and breaks ties with the lowest total loss.
+
+**Relaying the key.** Say the route is Alice, Charlie, Bob, with link keys $k_{AC}$ and $k_{CB}$.
+Alice's key is $K = k_{AC}$, which Charlie also holds. Charlie announces
+
+$$
+K \oplus k_{CB}
+$$
+
+publicly. Bob knows $k_{CB}$ and gets $K = (K \oplus k_{CB}) \oplus k_{CB}$. To anyone else the
+announcement is a one-time pad and looks like random noise. Longer routes repeat this hop by hop,
+and the final key is as long as the shortest link key.
+
+The catch is in the name: every trusted node sees $K$ in the clear, so they have to be trusted.
+Real networks like SECOQC in Vienna and the 4,600 km Chinese network work this way.
+
+</Window>
+
+<Window title="References">
+
+- C. H. Bennett and G. Brassard, *Quantum cryptography: Public key distribution and coin tossing*,
+  Proc. IEEE Int. Conf. on Computers, Systems and Signal Processing, 175 (1984).
+- A. K. Ekert, *Quantum cryptography based on Bell's theorem*, Phys. Rev. Lett. **67**, 661 (1991).
+- J. F. Clauser, M. A. Horne, A. Shimony and R. A. Holt, *Proposed experiment to test local
+  hidden-variable theories*, Phys. Rev. Lett. **23**, 880 (1969).
+- P. W. Shor and J. Preskill, *Simple proof of security of the BB84 quantum key distribution
+  protocol*, Phys. Rev. Lett. **85**, 441 (2000).
+- C. Gobby, Z. L. Yuan and A. J. Shields, *Quantum key distribution over 122 km of standard telecom
+  fiber*, Appl. Phys. Lett. **84**, 3762 (2004).
+- X. Ma, B. Qi, Y. Zhao and H.-K. Lo, *Practical decoy state for quantum key distribution*,
+  Phys. Rev. A **72**, 012326 (2005).
+- M. Peev et al., *The SECOQC quantum key distribution network in Vienna*, New J. Phys. **11**,
+  075001 (2009).
+- Y.-A. Chen et al., *An integrated space-to-ground quantum communication network over 4,600
+  kilometers*, Nature **589**, 214 (2021).
+
+</Window>

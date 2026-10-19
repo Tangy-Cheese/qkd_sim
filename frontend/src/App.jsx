@@ -101,6 +101,7 @@ function App() {
             )}
             {status === "checking" && <span className="checking">○ DIALING...</span>}
           </div>
+          <p id="status-note">First visit may take up to a minute while the backend wakes up.</p>
         </div>
 
         <div id="content">
